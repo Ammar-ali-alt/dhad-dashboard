@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة مجتمع الضاد | لوحة التحكم المتكاملة</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --accent-color: #f59e0b;
+            --green-color: #10b981;
+            --red-color: #ef4444;
+            --blue-color: #2563eb;
+            --border-color: #2d2d2d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* صناديق الواجهات (اللوجن والساين اب) */
+        .auth-box {
+            max-width: 420px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: #151515;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+            text-align: right;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+
+        .auth-toggle-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .auth-toggle-text span {
+            color: var(--accent-color);
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        /* لوحة التحكم الرئيسية */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-refresh {
+            background: #2d2d2d;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-refresh:hover {
+            background: #3d3d3d;
+            color: var(--accent-color);
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: var(--red-color);
+            border-color: var(--red-color);
+        }
+
+        /* كاردات الشغل والتاسكات */
+        .task-card {
+            background: #151515;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: right;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .task-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .subtasks-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .subtasks-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #222;
+        }
+
+        .subtasks-list input[type="checkbox"] {
+            margin-left: 10px;
+            accent-color: var(--accent-color);
+        }
+
+        /* شاشات العدادات الحية */
+        .timer-display {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-color);
+            background: #0d0d0d;
+            padding: 10px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 15px;
+            border: 1px solid #222;
+            letter-spacing: 1px;
+        }
+
+        .actions-area {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* الأزرار العامة */
+        .btn {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-start {
+            background-color: var(--accent-color);
+            color: #000;
+        }
+
+        .btn-pause {
+            background-color: var(--red-color);
+            color: #fff;
+        }
+
+        .btn-quick {
+            background-color: var(--green-color);
+            color: #fff;
+        }
+
+        .btn-submit-timer {
+            background-color: #059669;
+            color: #fff;
+        }
+
+        .btn-auth {
+            background-color: var(--accent-color);
+            color: #000;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        /* الدعم والتسليم غير المدرج */
+        .unlisted-section {
+            text-align: center;
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .btn-unlisted {
+            background-color: var(--blue-color);
+            color: white;
+        }
+
+        .support-section {
+            margin-top: 25px;
+            background: #151515;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .support-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .support-links a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .support-links a:hover {
+            text-decoration: underline;
+        }
+
+        .no-tasks {
+            text-align: center;
+            color: #888;
+            padding: 30px;
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div id="login-interface" class="auth-box">
+            <h2 style="color: var(--accent-color); margin-bottom: 10px;">📋 تسجيل دخول الأدمن</h2>
+            <p style="color: #888; font-size: 14px; margin-bottom: 30px;">مجتمع الضاد لتطوير المحتوى</p>
+
+            <div class="input-group">
+                <label>البريد الإلكتروني:</label>
+                <input type="email" id="login-email" placeholder="example@gmail.com" required style="text-align: left;">
+            </div>
+            <div class="input-group">
+                <label>رمز الـ PIN السرّي:</label>
+                <input type="password" id="login-pin" placeholder="••••" maxlength="4" required
+                    style="text-align: left;">
+            </div>
+            <button class="btn btn-auth" onclick="handleLogin()">تسجيل الدخول</button>
+
+            <p class="auth-toggle-text">معندكش حساب؟ <span onclick="switchToSignup()">أنشئ حساب جديد الحين</span></p>
+        </div>
+
+        <div id="signup-interface" class="auth-box" style="display: none;">
+            <h2 style="color: var(--accent-color); margin-bottom: 10px;">✨ إنشاء حساب أدمن جديد</h2>
+            <p style="color: #888; font-size: 14px; margin-bottom: 30px;">انضم لفريق العمل وباشر تاسكاتك الحية</p>
+
+            <div class="input-group">
+                <label>الاسم الكامل:</label>
+                <input type="text" id="signup-name" placeholder="اكتب اسمك الثلاثي" required>
+            </div>
+            <div class="input-group">
+                <label>البريد الإلكتروني العام:</label>
+                <input type="email" id="signup-email" placeholder="example@gmail.com" required
+                    style="text-align: left;">
+            </div>
+            <div class="input-group">
+                <label>تعيين رمز PIN سرّي (4 أرقام):</label>
+                <input type="password" id="signup-pin" placeholder="••••" maxlength="4" required
+                    style="text-align: left;">
+            </div>
+            <button class="btn btn-auth" onclick="handleSignup()">إرسال طلب الانضمام</button>
+
+            <p class="auth-toggle-text">لديك حساب بالفعل؟ <span onclick="switchToLogin()">تسجيل الدخول</span></p>
+        </div>
+
+        <div id="dashboard-interface" style="display: none;">
+            <div class="header">
+                <div class="welcome-text" style="text-align: right;">
+                    <h2>مرحباً، <span id="user-name">الأدمن</span></h2>
+                    <p style="font-size: 13px; color: #888; margin-top: 5px;">لوحة متابعة وإنجاز تاسكات كليك أب الحية
+                    </p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="refreshTasks()">🔄 تحديث الشغل</button>
+                    <button class="logout-btn" onclick="logout()">خروج ←</button>
+                </div>
+            </div>
+
+            <div class="tasks-section">
+                <h3 style="margin-bottom: 20px; color: var(--accent-color); text-align: right;">التاسكات المتبقية لك
+                    الحين:</h3>
+                <div id="tasks-container">
+                    <div class="no-tasks">جاري جلب خطة العمل الحية من كليك أب...</div>
+                </div>
+            </div>
+
+            <div class="unlisted-section">
+                <p style="color: #888; font-size: 14px; margin-bottom: 12px;">ملقيتش التاسك بتاعك مضاف في القائمة الحية؟
+                </p>
+                <button class="btn btn-unlisted" onclick="submitUnlistedTask()">📢 خلصت تسليم تاسك غير مدرج</button>
+            </div>
+
+            <div class="support-section">
+                <h4 style="margin: 0 0 8px 0; color: #aaa; font-size: 14px;">🛠️ واجهة التواصل والدعم الفني</h4>
+                <div class="support-links">
+                    <a href="https://wa.me/201095770691" target="_blank">💬 واتساب عمار</a>
+                    <a href="mailto:ammar.aly000@gmail.com">📧 الدعم عبر الإيميل</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let activeTimers = {};
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const isLogged = localStorage.getItem('isLoggedIn');
+            if (isLogged === 'true') {
+                showDashboard();
+            } else {
+                switchToLogin();
+            }
+        });
+
+        function switchToSignup() {
+            document.getElementById("login-interface").style.display = "none";
+            document.getElementById("signup-interface").style.display = "block";
+            document.getElementById("dashboard-interface").style.display = "none";
+        }
+
+        function switchToLogin() {
+            document.getElementById("signup-interface").style.display = "none";
+            document.getElementById("login-interface").style.display = "block";
+            document.getElementById("dashboard-interface").style.display = "none";
+        }
+
+        // دالة الساين اب الأصلية (بدون إنستجرام) - بتبعت ريكويست لإيميل عمار
+        async function handleSignup() {
+            const fullName = document.getElementById("signup-name").value.trim();
+            const email = document.getElementById("signup-email").value.trim();
+            const pin = document.getElementById("signup-pin").value.trim();
+
+            if (!fullName || !email || !pin) {
+                alert("برجاء ملء جميع الخانات المتاحة لإنشاء الحساب!");
+                return;
+            }
+            if (pin.length < 4) {
+                alert("رمز الـ PIN يجب أن يكون مكوناً من 4 أرقام بالظبط!");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, email, pin })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert("✨ " + data.message);
+                    switchToLogin(); // يحوله للوجن بعد نجاح الطلب
+                } else {
+                    alert("⚠️ خطأ: " + data.message);
+                }
+            } catch (err) {
+                alert("مشكلة في الاتصال بالسيرفر أثناء إنشاء الحساب!");
+            }
+        }
+
+        // دالة اللوجن الديناميكية لقراءة مدخلات المستخدم بالظبط
+        async function handleLogin() {
+            const email = document.getElementById("login-email").value.trim();
+            const pin = document.getElementById("login-pin").value.trim();
+
+            if (!email || !pin) {
+                alert("برجاء إدخال الإيميل والـ PIN الخاص بك!");
+                return;
+            }
+
+            const container = document.getElementById("tasks-container");
+            container.innerHTML = `<div class="no-tasks">🔄 جاري التحقق وسحب خطتك الحية من كليك أب...</div>`;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, pin })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('userPin', pin);
+                    localStorage.setItem('username', data.user.fullName);
+                    localStorage.setItem('userTasks', JSON.stringify(data.user.tasks));
+
+                    showDashboard();
+                } else {
+                    alert("⚠️ خطأ: " + data.message);
+                    logout();
+                }
+            } catch (err) {
+                alert("مشكلة في الاتصال بالسيرفر!");
+                logout();
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById("login-interface").style.display = "none";
+            document.getElementById("signup-interface").style.display = "none";
+            document.getElementById("dashboard-interface").style.display = "block";
+            document.getElementById("user-name").innerText = localStorage.getItem('username');
+
+            const tasks = JSON.parse(localStorage.getItem('userTasks')) || [];
+            renderTasks(tasks);
+        }
+
+        async function refreshTasks() {
+            const email = localStorage.getItem('userEmail');
+            const pin = localStorage.getItem('userPin');
+            const container = document.getElementById("tasks-container");
+            container.innerHTML = `<div class="no-tasks">🔄 جاري سحب التعديلات الجديدة من كليك أب...</div>`;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, pin })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    localStorage.setItem('userTasks', JSON.stringify(data.user.tasks));
+                    renderTasks(data.user.tasks);
+                } else {
+                    alert("فشل تحديث البيانات!");
+                }
+            } catch (err) {
+                alert("مشكلة في الاتصال بالسيرفر أثناء التحديث!");
+            }
+        }
+
+        function renderTasks(tasks) {
+            const container = document.getElementById("tasks-container");
+            container.innerHTML = "";
+
+            if (tasks.length === 0) {
+                container.innerHTML = `<div class="no-tasks">عاش يا بطل! مفيش أي تاسكات نشطة باسمك حالياً في كليك أب.</div>`;
+                return;
+            }
+
+            tasks.forEach((task, index) => {
+                const card = document.createElement("div");
+                card.className = "task-card";
+                card.id = `task-card-${index}`;
+
+                let subtasksHTML = "";
+                task.subTasks.forEach(sub => {
+                    subtasksHTML += `<li><input type="checkbox"> <span style="margin-right: 5px;">${sub}</span></li>`;
+                });
+
+                card.innerHTML = `
+                <div class="task-title">${task.title}</div>
+                <h4 style="color: var(--accent-color); font-size: 14px; margin-bottom: 10px;">📋 خطوات العمل الفرعية:</h4>
+                <ul class="subtasks-list">${subtasksHTML}</ul>
+                <div class="timer-display" id="timer-display-${index}">00:00:00</div>
+                <div class="actions-area">
+                    <button class="btn btn-start" id="btn-toggle-${index}" onclick="toggleTimer(${index})">⏱️ ابدأ العد</button>
+                    <button class="btn btn-submit-timer" id="btn-submit-timer-${index}" onclick="submitWithTimer('${task.title}', ${index})" style="display: none;">✅ إنهاء وتسليم بالوقت</button>
+                    <button class="btn btn-quick" id="btn-quick-${index}" onclick="quickSubmitTask('${task.title}', ${index})">✔️ تسليم سريع (بدون عداد)</button>
+                </div>
+            `;
+                container.appendChild(card);
+                activeTimers[index] = { seconds: 0, interval: null, running: false };
+            });
+        }
+
+        function toggleTimer(index) {
+            const timerObj = activeTimers[index];
+            const toggleBtn = document.getElementById(`btn-toggle-${index}`);
+            const submitTimerBtn = document.getElementById(`btn-submit-timer-${index}`);
+
+            if (!timerObj.running) {
+                timerObj.running = true;
+                toggleBtn.innerText = "⏸️ إيقاف مؤقت";
+                toggleBtn.className = "btn btn-pause";
+                submitTimerBtn.style.display = "inline-block";
+
+                timerObj.interval = setInterval(() => {
+                    timerObj.seconds++;
+                    document.getElementById(`timer-display-${index}`).innerText = formatTime(timerObj.seconds);
+                }, 1000);
+            } else {
+                timerObj.running = false;
+                toggleBtn.innerText = "⏱️ استئناف العد";
+                toggleBtn.className = "btn btn-start";
+                clearInterval(timerObj.interval);
+            }
+        }
+
+        function formatTime(totalSeconds) {
+            const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+            const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+            const secs = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${hrs}:${mins}:${secs}`;
+        }
+
+        function formatTimeArabic(totalSeconds) {
+            const hrs = Math.floor(totalSeconds / 3600);
+            const mins = Math.floor((totalSeconds % 3600) / 60);
+            const secs = totalSeconds % 60;
+            return `${hrs} ساعة و ${mins} دقيقة و ${secs} ثانية`;
+        }
+
+        async function submitWithTimer(taskTitle, index) {
+            const timerObj = activeTimers[index];
+            clearInterval(timerObj.interval);
+            const finalTimeSpent = formatTimeArabic(timerObj.seconds);
+            const username = localStorage.getItem('username');
+
+            try {
+                const response = await fetch('/api/submit-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, taskTitle, timeSpent: `إنجاز حقيقي بالعداد استغرق: [${finalTimeSpent}]` })
+                });
+                if (response.ok) {
+                    alert(`✅ تم تسليم التاسك وحساب الوقت الفعلي بنجاح: [${formatTime(timerObj.seconds)}]`);
+                    removeCardFromScreen(taskTitle, index);
+                }
+            } catch (err) { alert("مشكلة في الاتصال بالسيرفر!"); }
+        }
+
+        async function quickSubmitTask(taskTitle, index) {
+            const username = localStorage.getItem('username');
+            try {
+                const response = await fetch('/api/submit-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, taskTitle, timeSpent: "تسليم سريع مباشر (بدون عداد)" })
+                });
+                if (response.ok) {
+                    alert(`✔️ تم تسليم تاسك [${taskTitle}] وإشعار عمار بنجاح!`);
+                    removeCardFromScreen(taskTitle, index);
+                }
+            } catch (err) { alert("مشكلة في الاتصال بالسيرفر!"); }
+        }
+
+        function removeCardFromScreen(taskTitle, index) {
+            const card = document.getElementById(`task-card-${index}`);
+            if (card) {
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.remove();
+                    let tasks = JSON.parse(localStorage.getItem('userTasks')) || [];
+                    tasks = tasks.filter(t => t.title !== taskTitle);
+                    localStorage.setItem('userTasks', JSON.stringify(tasks));
+                    if (tasks.length === 0) renderTasks([]);
+                }, 300);
+            }
+        }
+
+        async function submitUnlistedTask() {
+            const taskTitle = prompt("اكتب عنوان أو اسم الشغل اللي خلصته:");
+            if (!taskTitle || taskTitle.trim() === "") return;
+
+            const username = localStorage.getItem('username');
+            try {
+                const response = await fetch('/api/submit-unlisted-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, taskTitle: taskTitle.trim() })
+                });
+                if (response.ok) alert("🚀 طار الإشعار لعمار بـ عنوان الشغل غير المدرج!");
+            } catch (err) { alert("مشكلة في الاتصال بالسيرفر!"); }
+        }
+
+        function logout() {
+            for (let key in activeTimers) { clearInterval(activeTimers[key].interval); }
+            localStorage.clear();
+            document.getElementById("dashboard-interface").style.display = "none";
+            switchToLogin();
+        }
+    </script>
+</body>
+
+</html>
