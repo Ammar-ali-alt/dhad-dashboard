@@ -124,7 +124,7 @@ app.post('/api/login', async (req, res) => {
             const filtered = listTasks.filter(task => {
                 return task.assignees && task.assignees.some(assignee => assignee.email.toLowerCase() === email.toLowerCase());
             }).map(task => ({
-                id: task.id, // سحب الـ ID لقفل التاسك أوتوماتيك عند التسليم
+                id: task.id, 
                 title: task.name,
                 subTasks: task.checklists && task.checklists[0] ? task.checklists[0].items.map(item => item.name) : ["تحضير المادة العلمية", "التنفيذ والمراجعة مع عمار"]
             }));
@@ -141,7 +141,6 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/submit-task', async (req, res) => {
     const { username, taskTitle, timeSpent, taskId } = req.body;
 
-    // الاتصال بكليك أب وقفل التاسك برقم الـ ID الفريد بتاعه
     if (taskId) {
         try {
             await axios.put(`https://api.clickup.com/api/v2/task/${taskId}`, {
@@ -178,5 +177,5 @@ app.post('/api/submit-unlisted-task', (req, res) => {
 
 app.get('/api/admin/users', (req, res) => { res.json({ success: true, users: usersDatabase }); });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 السيرفر المتكامل والمربوط أوتوماتيك بكليك أب قايم على بورت ${PORT}`));
+// تصدير السيرفر بالكامل لفيرسيل
+module.exports = app;

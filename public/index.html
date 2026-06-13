@@ -40,7 +40,6 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
 
-        /* صناديق الواجهات (اللوجن والساين اب) */
         .auth-box {
             max-width: 420px;
             margin: 0 auto;
@@ -68,7 +67,7 @@
             color: #fff;
             font-size: 16px;
             box-sizing: border-box;
-            text-align: right;
+            text-align: left;
         }
 
         .input-group input:focus {
@@ -89,7 +88,6 @@
             text-decoration: underline;
         }
 
-        /* لوحة التحكم الرئيسية */
         .header {
             display: flex;
             justify-content: space-between;
@@ -134,7 +132,6 @@
             border-color: var(--red-color);
         }
 
-        /* كاردات الشغل والتاسكات */
         .task-card {
             background: #151515;
             border: 1px solid var(--border-color);
@@ -170,7 +167,6 @@
             accent-color: var(--accent-color);
         }
 
-        /* شاشات العدادات الحية */
         .timer-display {
             font-family: 'Courier New', Courier, monospace;
             font-size: 24px;
@@ -192,7 +188,6 @@
             flex-wrap: wrap;
         }
 
-        /* الأزرار العامة */
         .btn {
             border: none;
             padding: 10px 20px;
@@ -230,7 +225,6 @@
             font-size: 16px;
         }
 
-        /* الدعم والتسليم غير المدرج */
         .unlisted-section {
             text-align: center;
             margin-top: 30px;
@@ -287,41 +281,34 @@
         <div id="login-interface" class="auth-box">
             <h2 style="color: var(--accent-color); margin-bottom: 10px;">📋 تسجيل دخول الأدمن</h2>
             <p style="color: #888; font-size: 14px; margin-bottom: 30px;">مجتمع الضاد لتطوير المحتوى</p>
-
             <div class="input-group">
                 <label>البريد الإلكتروني:</label>
-                <input type="email" id="login-email" placeholder="example@gmail.com" required style="text-align: left;">
+                <input type="email" id="login-email" placeholder="example@gmail.com" required>
             </div>
             <div class="input-group">
                 <label>رمز الـ PIN السرّي:</label>
-                <input type="password" id="login-pin" placeholder="••••" maxlength="4" required
-                    style="text-align: left;">
+                <input type="password" id="login-pin" placeholder="••••" maxlength="4" required>
             </div>
             <button class="btn btn-auth" onclick="handleLogin()">تسجيل الدخول</button>
-
             <p class="auth-toggle-text">معندكش حساب؟ <span onclick="switchToSignup()">أنشئ حساب جديد الحين</span></p>
         </div>
 
         <div id="signup-interface" class="auth-box" style="display: none;">
             <h2 style="color: var(--accent-color); margin-bottom: 10px;">✨ إنشاء حساب أدمن جديد</h2>
             <p style="color: #888; font-size: 14px; margin-bottom: 30px;">انضم لفريق العمل وباشر تاسكاتك الحية</p>
-
             <div class="input-group">
                 <label>الاسم الكامل:</label>
-                <input type="text" id="signup-name" placeholder="اكتب اسمك الثلاثي" required>
+                <input type="text" id="signup-name" placeholder="اكتب اسمك الثلاثي" required style="text-align: right;">
             </div>
             <div class="input-group">
                 <label>البريد الإلكتروني العام:</label>
-                <input type="email" id="signup-email" placeholder="example@gmail.com" required
-                    style="text-align: left;">
+                <input type="email" id="signup-email" placeholder="example@gmail.com" required>
             </div>
             <div class="input-group">
                 <label>تعيين رمز PIN سرّي (4 أرقام):</label>
-                <input type="password" id="signup-pin" placeholder="••••" maxlength="4" required
-                    style="text-align: left;">
+                <input type="password" id="signup-pin" placeholder="••••" maxlength="4" required>
             </div>
             <button class="btn btn-auth" onclick="handleSignup()">إرسال طلب الانضمام</button>
-
             <p class="auth-toggle-text">لديك حساب بالفعل؟ <span onclick="switchToLogin()">تسجيل الدخول</span></p>
         </div>
 
@@ -386,7 +373,6 @@
             document.getElementById("dashboard-interface").style.display = "none";
         }
 
-        // دالة الساين اب الأصلية (بدون إنستجرام) - بتبعت ريكويست لإيميل عمار
         async function handleSignup() {
             const fullName = document.getElementById("signup-name").value.trim();
             const email = document.getElementById("signup-email").value.trim();
@@ -411,7 +397,7 @@
 
                 if (data.success) {
                     alert("✨ " + data.message);
-                    switchToLogin(); // يحوله للوجن بعد نجاح الطلب
+                    switchToLogin();
                 } else {
                     alert("⚠️ خطأ: " + data.message);
                 }
@@ -420,7 +406,6 @@
             }
         }
 
-        // دالة اللوجن الديناميكية لقراءة مدخلات المستخدم بالظبط
         async function handleLogin() {
             const email = document.getElementById("login-email").value.trim();
             const pin = document.getElementById("login-pin").value.trim();
@@ -519,8 +504,8 @@
                 <div class="timer-display" id="timer-display-${index}">00:00:00</div>
                 <div class="actions-area">
                     <button class="btn btn-start" id="btn-toggle-${index}" onclick="toggleTimer(${index})">⏱️ ابدأ العد</button>
-                    <button class="btn btn-submit-timer" id="btn-submit-timer-${index}" onclick="submitWithTimer('${task.title}', ${index})" style="display: none;">✅ إنهاء وتسليم بالوقت</button>
-                    <button class="btn btn-quick" id="btn-quick-${index}" onclick="quickSubmitTask('${task.title}', ${index})">✔️ تسليم سريع (بدون عداد)</button>
+                    <button class="btn btn-submit-timer" id="btn-submit-timer-${index}" onclick="submitWithTimer('${task.title}', ${index}, '${task.id}')" style="display: none;">✅ إنهاء وتسليم بالوقت</button>
+                    <button class="btn btn-quick" id="btn-quick-${index}" onclick="quickSubmitTask('${task.title}', ${index}, '${task.id}')">✔️ تسليم سريع (بدون عداد)</button>
                 </div>
             `;
                 container.appendChild(card);
@@ -565,7 +550,7 @@
             return `${hrs} ساعة و ${mins} دقيقة و ${secs} ثانية`;
         }
 
-        async function submitWithTimer(taskTitle, index) {
+        async function submitWithTimer(taskTitle, index, taskId) {
             const timerObj = activeTimers[index];
             clearInterval(timerObj.interval);
             const finalTimeSpent = formatTimeArabic(timerObj.seconds);
@@ -575,25 +560,25 @@
                 const response = await fetch('/api/submit-task', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, taskTitle, timeSpent: `إنجاز حقيقي بالعداد استغرق: [${finalTimeSpent}]` })
+                    body: JSON.stringify({ username, taskTitle, timeSpent: `إنجاز حقيقي بالعداد استغرق: [${finalTimeSpent}]`, taskId })
                 });
                 if (response.ok) {
-                    alert(`✅ تم تسليم التاسك وحساب الوقت الفعلي بنجاح: [${formatTime(timerObj.seconds)}]`);
+                    alert(`✅ تم قفل وإغلاق التاسك في كليك أب بنجاح! الوقت المحسوب: [${formatTime(timerObj.seconds)}]`);
                     removeCardFromScreen(taskTitle, index);
                 }
             } catch (err) { alert("مشكلة في الاتصال بالسيرفر!"); }
         }
 
-        async function quickSubmitTask(taskTitle, index) {
+        async function quickSubmitTask(taskTitle, index, taskId) {
             const username = localStorage.getItem('username');
             try {
                 const response = await fetch('/api/submit-task', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, taskTitle, timeSpent: "تسليم سريع مباشر (بدون عداد)" })
+                    body: JSON.stringify({ username, taskTitle, timeSpent: "تسليم سريع مباشر (بدون عداد)", taskId })
                 });
                 if (response.ok) {
-                    alert(`✔️ تم تسليم تاسك [${taskTitle}] وإشعار عمار بنجاح!`);
+                    alert(`✔️ تم إنجاز المهمة وقفلها بنجاح في كليك أب أوتوماتيك!`);
                     removeCardFromScreen(taskTitle, index);
                 }
             } catch (err) { alert("مشكلة في الاتصال بالسيرفر!"); }
