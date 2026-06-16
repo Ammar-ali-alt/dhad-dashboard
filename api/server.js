@@ -20,7 +20,7 @@ const CLICKUP_LIST_IDS = [
     '901810061524'
 ];
 
-// القائمة الافتراضية اللي بينزل فيها الشغل الجديد المضاف يدوياً من اللوحة
+// القائمة الافتراضية لترحيل التاسكات الجديدة المخصصة
 const DEFAULT_CREATION_LIST = '901809636671';
 
 const transporter = nodemailer.createTransport({
@@ -48,7 +48,7 @@ function sendAdminApprovalEmail(req, fullName, email) {
             </div>
         `
     };
-    transporter.sendMail(mailOptions, (err) => { if (err) console.log('خطأ إيميل التفعيل:', err); });
+    transporter.sendMail(mailOptions, (err) => { if (err) console.log('خطأ إيميل:', err); });
 }
 
 let usersDatabase = {
@@ -98,16 +98,10 @@ app.post('/api/login', async (req, res) => {
 
         responses.forEach(response => {
             const listTasks = response.data.tasks || [];
-
-            // الفلترة الذكية: قراءة الـ Assignee أو الإيميل المكتوب داخل وصف التاسك المخصص
             const filtered = listTasks.filter(task => {
-                // 1. هل الشخص معمول له Assign بالإيميل؟
+                // فلترة مزدوجة: لو الأدمن معمول له Assign أو لو الأدمن هو اللي ميكرت التاسك يدوياً من اللوحة
                 const isAssigned = task.assignees && task.assignees.some(assignee => assignee.email.toLowerCase() === email.toLowerCase());
-
-                // 2. هل التاسك ده الأدمن هو اللي كريته بنفسه من اللوحة؟ (بنقرا إيميله من الوصف اللي السيرفر بيكتبه أوتوماتيك تحت)
                 const isCreatedByHim = task.description && task.description.includes(email);
-
-                // 3. التأكد من أن التاسك نشط وغير مغلق
                 const isNotDone = task.status && task.status.status.toLowerCase() !== 'complete' && task.status.status.toLowerCase() !== 'done';
 
                 return (isAssigned || isCreatedByHim) && isNotDone;
@@ -125,7 +119,7 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// ميزة إنشاء تاسك مخصص ورفعه لكليك أب مباشرة مع وسم إيميل الأدمن المنشئ في الوصف
+// 🚀 الميزة المفقودة: استقبال ترحيل التاسكات المخصصة لكليك أب 🚀
 app.post('/api/create-custom-task', async (req, res) => {
     const { email, title, subTasks } = req.body;
 
@@ -142,7 +136,7 @@ app.post('/api/create-custom-task', async (req, res) => {
 
         const createdTask = response.data;
 
-        // إذا كان هناك خطوات فرعية، نقوم بإضافتها كـ Checklist داخل التاسك الجديد
+        // إذا أضاف الأدمن خطوات فرعية، نقوم برفعها كـ Checklist داخل التاسك
         if (subTasks && subTasks.length > 0) {
             try {
                 const checklistResponse = await axios.post(`https://api.clickup.com/api/v2/task/${createdTask.id}/checklist`, { name: "خطوات التنفيذ" }, {
@@ -155,10 +149,10 @@ app.post('/api/create-custom-task', async (req, res) => {
                         headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
                     });
                 }
-            } catch (checkErr) { console.log("خطأ أثناء إضافة التشيك ليست:", checkErr.message); }
+            } catch (checkErr) { console.log('خطأ تشيك ليست:', checkErr.message); }
         }
 
-        res.json({ success: true, message: "تمت إضافة التاسك بنجاح في كليك أب الحية!" });
+        res.json({ success: true, message: "تمت إضافة التاسك بنجاح في كليك أب!" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: "فشل ترحيل التاسك لكليك أب." });
@@ -172,7 +166,7 @@ app.post('/api/submit-task', async (req, res) => {
             await axios.put(`https://api.clickup.com/api/v2/task/${taskId}`, { status: 'complete' }, {
                 headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
             });
-        } catch (clickUpErr) { console.log("خطأ قفل تاسك كليك اب:", clickUpErr.message); }
+        } catch (clickUpErr) { console.log(clickUpErr.message); }
     }
     const mailOptions = {
         from: MY_GMAIL, to: MY_GMAIL,

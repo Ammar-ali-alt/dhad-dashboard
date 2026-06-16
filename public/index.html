@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة مجتمع الضاد | لوحة التحكم المتكاملة</title>
+    <title>بوابة مجتمع الضاد | لوحة تحكم المهام</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -805,7 +805,7 @@
 
         <div id="login-interface" class="auth-box">
             <h2>تسجيل دخول الأدمن</h2>
-            <p>مجتمع الضاد لتطوير المحتوى العربي</p>
+            <p>مجتمع الضاد</p>
             <div class="input-group">
                 <label>البريد الإلكتروني:</label>
                 <input type="email" id="login-email" placeholder="example@gmail.com" required>
@@ -815,12 +815,12 @@
                 <input type="password" id="login-pin" placeholder="••••" maxlength="4" required>
             </div>
             <button class="btn btn-auth" onclick="handleLogin()">تسجيل الدخول ←</button>
-            <p class="auth-toggle-text">معندكش حساب؟ <span onclick="switchToSignup()">أنشئ حساب جديد الحين</span></p>
+            <p class="auth-toggle-text">معندكش حساب؟ <span onclick="switchToSignup()">أنشئ حساب جديد الآن</span></p>
         </div>
 
         <div id="signup-interface" class="auth-box" style="display: none;">
             <h2>إنشاء حساب أدمن جديد</h2>
-            <p>انضم لفريق العمل وباشر تاسكاتك الحية</p>
+            <p>انضم لفريق العمل وباشر تاسكاتك الآن</p>
             <div class="input-group">
                 <label>الاسم الكامل:</label>
                 <input type="text" id="signup-name" placeholder="اكتب اسمك الثلاثي" required style="text-align: right;">
@@ -842,10 +842,10 @@
             <div class="header">
                 <div class="welcome-text">
                     <h2>مرحباً، <span id="user-name">الأدمن</span> 👋</h2>
-                    <p>لوحة متابعة وإنجاز تاسكات كليك أب الحية</p>
+                    <p>لوحة متابعة وإنجاز تاسكات كليك أب الآن</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-refresh" onclick="refreshTasks()">🔄 تحديث الشغل</button>
+                    <button class="btn-refresh" onclick="refreshTasks()">🔄 تحديث المهام</button>
                     <button class="logout-btn" onclick="logout()">خروج ←</button>
                 </div>
             </div>
@@ -853,22 +853,22 @@
             <div class="intro-grid">
                 <div class="intro-card">
                     <h3>📜 عن مجتمع الضاد</h3>
-                    <p>كيان طموح يهدف إلى قيادة وتطوير المحتوى العربي الرقمي والارتقاء بجودته. نوثق الرؤى، ونصنع
-                        الأفكار، ونمكّن المبدعين من إدارة وهيكلة مشاريعهم البرمجية والفنية بأعلى معايير الجودة
-                        التنفيذية.</p>
+                    <p>نهدف في مجتمع الضاد إلى إثراء وعي القارئ العربي عبر تلك المناقشات،
+                        كما نسعى كذلك لدعم الكُتّاب العرب الذين يملكون قلمًا مميزًا
+                        ولنكون نقطة وصل بينهم وبين قرائهم للتعرف على زوايا مختلفة من تجربة القارئ والكاتب.</p>
                 </div>
                 <div class="intro-card" style="display: flex; flex-direction: column; justify-content: space-between;">
-                    <h3>👑 قيادة المجتمع</h3>
+                    <h3> مؤسسين المجتمع</h3>
                     <div class="founders-display">
                         <div class="founder-profile">
                             <img class="founder-avatar" src="ammar.jpg" alt="عمار علي">
                             <div class="founder-name">عمار علي</div>
-                            <div class="founder-role">المؤسس</div>
+                            <div class="founder-role">مؤسس</div>
                         </div>
                         <div class="founder-profile">
                             <img class="founder-avatar" src="ekleel.jpg" alt="إكليل">
                             <div class="founder-name">إكليل</div>
-                            <div class="founder-role">شريك مؤسس</div>
+                            <div class="founder-role">مؤسس</div>
                         </div>
                     </div>
                 </div>
@@ -877,7 +877,7 @@
             <div class="tasks-section">
                 <div class="section-label">⚡ التاسكات النشطة للمسؤول</div>
                 <div id="tasks-container">
-                    <div class="no-tasks">جاري جلب خطة العمل الحية من كليك أب...</div>
+                    <div class="no-tasks">جاري جلب خطة العمل الآن من كليك أب...</div>
                 </div>
             </div>
 
@@ -897,7 +897,7 @@
                     <ul class="subtask-preview-list" id="subtask-preview-list"></ul>
                 </div>
                 <button class="btn-deploy" id="deploy-btn" onclick="deployCustomTask()">🚀 ترحيل المهمة إلى كليك أب
-                    الحية</button>
+                    الآن</button>
             </div>
 
             <div class="admins-section">
@@ -918,7 +918,7 @@
             </div>
 
             <div class="unlisted-section">
-                <p>ملقيتش التاسك بتاعك مضاف في القائمة الحية</p>
+                <p>ملقيتش التاسك بتاعك مضاف في القائمة الحين</p>
                 <button class="btn btn-unlisted" onclick="submitUnlistedTask()">📢 خلصت تسليم تاسك غير مدرج</button>
             </div>
 
