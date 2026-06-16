@@ -91,8 +91,8 @@
         }
 
         .dhad-logo-img {
-            width: 90px;
-            height: 90px;
+            width: 140px;
+            height: auto;
             object-fit: contain;
             border-radius: 14px;
             filter: drop-shadow(0 0 12px var(--accent-glow));
@@ -109,7 +109,7 @@
 
             50% {
                 filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.5));
-                transform: scale(1.03);
+                transform: scale(1.02);
             }
         }
 
@@ -632,34 +632,46 @@
         }
 
         .admins-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 16px;
+            display: flex;
+            gap: 24px;
+            justify-content: center;
             margin-top: 16px;
+            flex-wrap: wrap;
         }
 
         .admin-showcase-card {
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: 14px;
-            padding: 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 20px;
             text-align: center;
             transition: var(--transition);
+            min-width: 140px;
+            flex: 1;
+            max-width: 200px;
         }
 
         .admin-showcase-card:hover {
-            border-color: var(--glass-border);
-            background: rgba(245, 158, 11, 0.02);
-            transform: translateY(-2px);
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
         .admin-showcase-avatar {
-            width: 48px;
-            height: 48px;
+            width: 70px;
+            /* تم توحيد الحجم مع صور القيادة */
+            height: 70px;
+            /* تم توحيد الحجم مع صور القيادة */
             border-radius: 50%;
             margin-bottom: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--glass-border);
             object-fit: cover;
+            background: #151515;
+            transition: var(--transition);
+        }
+
+        .admin-showcase-card:hover .admin-showcase-avatar {
+            border-color: var(--accent-color);
         }
 
         /* ── UNLISTED & SUPPORT ── */
