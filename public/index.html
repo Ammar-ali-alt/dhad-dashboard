@@ -21,10 +21,8 @@
             --accent-glow: rgba(245, 158, 11, 0.2);
             --accent-deep: #d97706;
             --green-color: #10b981;
-            --green-glow: rgba(16, 185, 129, 0.2);
             --red-color: #ef4444;
             --blue-color: #3b82f6;
-            --border-color: #1a1a1a;
             --border-subtle: rgba(255, 255, 255, 0.04);
             --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.75), 0 1px 0 rgba(255, 255, 255, 0.02) inset;
             --shadow-btn: 0 4px 15px rgba(0, 0, 0, 0.5);
@@ -83,7 +81,6 @@
             transition: var(--transition);
         }
 
-        /* ── BRAND LOGO ── */
         .brand-logo-container {
             display: flex;
             justify-content: center;
@@ -113,7 +110,6 @@
             }
         }
 
-        /* ── AUTH BOXES ── */
         .auth-box {
             max-width: 440px;
             margin: 0 auto;
@@ -184,7 +180,6 @@
             text-shadow: 0 0 8px var(--accent-color);
         }
 
-        /* ── DASHBOARD HEADER ── */
         .header {
             display: flex;
             justify-content: space-between;
@@ -255,7 +250,6 @@
             transform: translateY(-2px);
         }
 
-        /* ── INTRO HERO GRID ── */
         .intro-grid {
             display: grid;
             grid-template-columns: 1.2fr 1fr;
@@ -333,7 +327,6 @@
             color: var(--accent-color);
         }
 
-        /* ── SECTION LABELS ── */
         .section-label {
             font-size: 14px;
             font-weight: 700;
@@ -353,7 +346,6 @@
             background: linear-gradient(to left, transparent, var(--glass-border));
         }
 
-        /* ── TASK CARDS ── */
         .task-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -423,7 +415,6 @@
             cursor: pointer;
         }
 
-        /* ── TIMER ── */
         .timer-display {
             font-family: 'Courier New', Courier, monospace;
             font-size: 26px;
@@ -459,7 +450,6 @@
             }
         }
 
-        /* ── BUTTONS ── */
         .actions-area {
             display: flex;
             gap: 12px;
@@ -512,7 +502,6 @@
             font-size: 15px;
         }
 
-        /* ── CUSTOM TASK SECTION ── */
         .custom-task-section {
             margin-top: 36px;
             background: rgba(245, 158, 11, 0.02);
@@ -617,12 +606,6 @@
             box-shadow: 0 6px 20px rgba(245, 158, 11, 0.25);
         }
 
-        .btn-deploy:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.45);
-        }
-
-        /* ── MANAGEMENT & ADMINS ── */
         .admins-section {
             margin-top: 36px;
             background: rgba(255, 255, 255, 0.01);
@@ -651,12 +634,6 @@
             max-width: 200px;
         }
 
-        .admin-showcase-card:hover {
-            border-color: var(--accent-color);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-
         .admin-showcase-avatar {
             width: 70px;
             height: 70px;
@@ -665,14 +642,44 @@
             border: 2px solid var(--glass-border);
             object-fit: cover;
             background: #151515;
-            transition: var(--transition);
         }
 
-        .admin-showcase-card:hover .admin-showcase-avatar {
-            border-color: var(--accent-color);
+        /* ── 📊 SUPER ADMIN INTERFACE (خاصة بعمار) ── */
+        .super-admin-interface {
+            margin-top: 36px;
+            padding: 30px;
+            background: rgba(16, 185, 129, 0.02);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            border-radius: 20px;
+            display: none;
         }
 
-        /* ── UNLISTED & SUPPORT ── */
+        .super-admin-interface h3 {
+            color: #10b981;
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 18px;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            text-align: right;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 14px;
+        }
+
+        .admin-table th {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
         .unlisted-section {
             text-align: center;
             margin-top: 32px;
@@ -733,10 +740,6 @@
             transition: var(--transition);
         }
 
-        .support-links a:hover {
-            text-shadow: 0 0 6px var(--accent-color);
-        }
-
         .no-tasks {
             text-align: center;
             color: #666;
@@ -782,11 +785,6 @@
                 gap: 16px;
                 align-items: flex-start;
             }
-
-            .header-actions {
-                width: 100%;
-                justify-content: flex-end;
-            }
         }
     </style>
 </head>
@@ -802,8 +800,8 @@
         </div>
 
         <div id="login-interface" class="auth-box">
-            <h2>تسجيل دخول الأدمن</h2>
-            <p>مجتمع الضاد لتطوير المحتوى العربي</p>
+            <h2>تسجيل دخول البوابة</h2>
+            <p>لوحة تحكم ومتابعة مجتمع الضاد</p>
             <div class="input-group">
                 <label>البريد الإلكتروني:</label>
                 <input type="email" id="login-email" placeholder="example@gmail.com" required>
@@ -813,12 +811,12 @@
                 <input type="password" id="login-pin" placeholder="••••" maxlength="4" required>
             </div>
             <button class="btn btn-auth" onclick="handleLogin()">تسجيل الدخول ←</button>
-            <p class="auth-toggle-text">معندكش حساب؟ <span onclick="switchToSignup()">أنشئ حساب جديد الحين</span></p>
+            <p class="auth-toggle-text">معندكش حساب؟ <span onclick="switchToSignup()">أنشئ حسابك الحين فوراً</span></p>
         </div>
 
         <div id="signup-interface" class="auth-box" style="display: none;">
             <h2>إنشاء حساب أدمن جديد</h2>
-            <p>انضم لفريق العمل وباشر تاسكاتك الحية</p>
+            <p>سجل بياناتك وابدأ مباشرة في استلام الشغل</p>
             <div class="input-group">
                 <label>الاسم الكامل:</label>
                 <input type="text" id="signup-name" placeholder="اكتب اسمك الثلاثي" required style="text-align: right;">
@@ -831,7 +829,7 @@
                 <label>تعيين رمز PIN سرّي (4 أرقام):</label>
                 <input type="password" id="signup-pin" placeholder="••••" maxlength="4" required>
             </div>
-            <button class="btn btn-auth" onclick="handleSignup()">إرسال طلب الانضمام ←</button>
+            <button class="btn btn-auth" onclick="handleSignup()">تفعيل الحساب والانضمام فوراً ←</button>
             <p class="auth-toggle-text">لديك حساب بالفعل؟ <span onclick="switchToLogin()">تسجيل الدخول</span></p>
         </div>
 
@@ -843,12 +841,32 @@
                     <p>لوحة متابعة وإنجاز تاسكات كليك أب الحية</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-refresh" onclick="refreshTasks()">🔄 تحديث الشغل</button>
+                    <button class="btn-refresh" id="refresh-btn-area" onclick="refreshTasks()">🔄 تحديث الشغل</button>
                     <button class="logout-btn" onclick="logout()">خروج ←</button>
                 </div>
             </div>
 
-            <div class="intro-grid">
+            <div id="super-admin-area" class="super-admin-interface">
+                <h3>👑 لوحة القائد (مراقبة داتا الأدمنز)</h3>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">قائمة بجميع مسؤولي الضاد الذين
+                    سجلوا في النظام وعدد زياراتهم الحية للمنصة:</p>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>الاسم بالكامل</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>عدد زيارات اللوحة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-rows">
+                        <tr>
+                            <td colspan="3" style="text-align:center; color:#666;">جاري سحب قائمة التيم...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="intro-grid" id="intro-grid-area">
                 <div class="intro-card">
                     <h3>📜 عن مجتمع الضاد</h3>
                     <p>كيان طموح يهدف إلى قيادة وتطوير المحتوى العربي الرقمي والارتقاء بجودته. نوثق الرؤى، ونصنع
@@ -872,14 +890,14 @@
                 </div>
             </div>
 
-            <div class="tasks-section">
+            <div class="tasks-section" id="tasks-section-area">
                 <div class="section-label">⚡ التاسكات النشطة للمسؤول</div>
                 <div id="tasks-container">
                     <div class="no-tasks">جاري جلب خطة العمل الحية من كليك أب...</div>
                 </div>
             </div>
 
-            <div class="custom-task-section">
+            <div class="custom-task-section" id="custom-task-area">
                 <h3>➕ إضافة مهمة مخصصة إلى كليك أب</h3>
                 <div class="input-group">
                     <label>عنوان المهمة الأساسية:</label>
@@ -906,7 +924,6 @@
                         <div class="founder-name" style="font-size:12px;">سمية حسين</div>
                         <div class="founder-role" style="font-size:10px;">Creative Director</div>
                     </div>
-
                     <div class="admin-showcase-card">
                         <img class="admin-showcase-avatar" src="hagar.jpg" alt="هاجر يحيى">
                         <div class="founder-name" style="font-size:12px;">هاجر يحيى</div>
@@ -939,127 +956,57 @@
         const ctx = canvas.getContext('2d');
         let particles = [];
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
         class Particle {
             constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = Math.random() * 0.4 - 0.2;
-                this.speedY = Math.random() * -0.5 - 0.1;
-                this.alpha = Math.random() * 0.5 + 0.1;
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5; this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * -0.5 - 0.1; this.alpha = Math.random() * 0.5 + 0.1;
             }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.y < 0) {
-                    this.y = canvas.height;
-                    this.x = Math.random() * canvas.width;
-                }
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.alpha;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = '#f59e0b';
-                ctx.fill();
-                ctx.restore();
-            }
+            update() { this.x += this.speedX; this.y += this.speedY; if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } }
+            draw() { ctx.save(); ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = '#f59e0b'; ctx.fill(); ctx.restore(); }
         }
-
-        function initParticles() {
-            particles = [];
-            for (let i = 0; i < 45; i++) { particles.push(new Particle()); }
-        }
+        function initParticles() { for (let i = 0; i < 45; i++) { particles.push(new Particle()); } }
         initParticles();
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            requestAnimationFrame(animateParticles);
-        }
+        function animateParticles() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateParticles); }
         animateParticles();
 
         document.addEventListener("DOMContentLoaded", () => {
-            const isLogged = localStorage.getItem('isLoggedIn');
-            if (isLogged === 'true') {
-                showDashboard();
-            } else {
-                switchToLogin();
-            }
+            if (localStorage.getItem('isLoggedIn') === 'true') { showDashboard(); } else { switchToLogin(); }
         });
 
-        function switchToSignup() {
-            document.getElementById("login-interface").style.display = "none";
-            document.getElementById("signup-interface").style.display = "block";
-            document.getElementById("dashboard-interface").style.display = "none";
-        }
-
-        function switchToLogin() {
-            document.getElementById("signup-interface").style.display = "none";
-            document.getElementById("login-interface").style.display = "block";
-            document.getElementById("dashboard-interface").style.display = "none";
-        }
+        function switchToSignup() { document.getElementById("login-interface").style.display = "none"; document.getElementById("signup-interface").style.display = "block"; }
+        function switchToLogin() { document.getElementById("signup-interface").style.display = "none"; document.getElementById("login-interface").style.display = "block"; }
 
         async function handleSignup() {
             const fullName = document.getElementById("signup-name").value.trim();
             const email = document.getElementById("signup-email").value.trim();
             const pin = document.getElementById("signup-pin").value.trim();
 
-            if (!fullName || !email || !pin) {
-                alert("برجاء ملء جميع الخانات المتاحة لإنشاء الحساب!");
-                return;
-            }
-            if (pin.length < 4) {
-                alert("رمز الـ PIN يجب أن يكون مكوناً من 4 أرقام بالظبط!");
-                return;
-            }
+            if (!fullName || !email || !pin) { alert("برجاء ملء جميع الخانات المتاحة!"); return; }
 
             try {
                 const response = await fetch('/api/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ fullName, email, pin })
                 });
                 const data = await response.json();
-
-                if (data.success) {
-                    alert("✨ " + data.message);
-                    switchToLogin();
-                } else {
-                    alert("⚠️ خطأ: " + data.message);
-                }
-            } catch (err) {
-                alert("مشكلة في الاتصال بالسيرفر أثناء إنشاء الحساب!");
-            }
+                if (data.success) { alert(data.message); switchToLogin(); } else { alert(data.message); }
+            } catch (err) { alert("مشكلة في الاتصال بالسيرفر!"); }
         }
 
         async function handleLogin() {
             const email = document.getElementById("login-email").value.trim();
             const pin = document.getElementById("login-pin").value.trim();
 
-            if (!email || !pin) {
-                alert("برجاء إدخال الإيميل والـ PIN الخاص بك!");
-                return;
-            }
-
-            const container = document.getElementById("tasks-container");
-            container.innerHTML = `<div class="no-tasks">🔄 جاري التحقق وسحب خطتك الحية من كليك أب...</div>`;
+            if (!email || !pin) { alert("برجاء إدخال الإيميل والـ PIN!"); return; }
 
             try {
                 const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, pin })
                 });
                 const data = await response.json();
@@ -1068,89 +1015,94 @@
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userEmail', email);
                     localStorage.setItem('userPin', pin);
-                    localStorage.setItem('username', data.user.fullName);
-                    localStorage.setItem('userTasks', JSON.stringify(data.user.tasks));
+
+                    if (data.isAdmin) {
+                        localStorage.setItem('isAdmin', 'true');
+                        localStorage.setItem('username', 'القائد عمار علي');
+                    } else {
+                        localStorage.setItem('isAdmin', 'false');
+                        localStorage.setItem('username', data.user.fullName);
+                        localStorage.setItem('userTasks', JSON.stringify(data.user.tasks));
+                    }
                     showDashboard();
-                } else {
-                    alert("⚠️ خطأ: " + data.message);
-                    logout();
-                }
-            } catch (err) {
-                alert("مشكلة في الاتصال بالسيرفر!");
-                logout();
-            }
+                } else { alert(data.message); }
+            } catch (err) { alert("مشكلة في الاتصال بالسيرفر!"); }
         }
 
         function showDashboard() {
             document.getElementById("login-interface").style.display = "none";
             document.getElementById("signup-interface").style.display = "none";
             document.getElementById("dashboard-interface").style.display = "block";
-            document.getElementById("user-name").innerText = localStorage.getItem('username');
 
-            const tasks = JSON.parse(localStorage.getItem('userTasks')) || [];
-            renderTasks(tasks);
+            const username = localStorage.getItem('username');
+            document.getElementById("user-name").innerText = username;
+
+            if (localStorage.getItem('isAdmin') === 'true') {
+                document.getElementById("super-admin-area").style.display = "block";
+                document.getElementById("tasks-section-area").style.display = "none";
+                document.getElementById("custom-task-area").style.display = "none";
+                document.getElementById("refresh-btn-area").style.display = "none";
+                fetchAdminsList();
+            } else {
+                document.getElementById("super-admin-area").style.display = "none";
+                const tasks = JSON.parse(localStorage.getItem('userTasks')) || [];
+                renderTasks(tasks);
+            }
+        }
+
+        async function fetchAdminsList() {
+            try {
+                const response = await fetch('/api/admin/users');
+                const data = await response.json();
+                if (data.success) {
+                    const tbody = document.getElementById("admin-users-rows");
+                    tbody.innerHTML = "";
+                    data.users.forEach(u => {
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `<td><b>${u.fullName}</b></td><td>${u.email}</td><td><span style="color:#10b981; font-weight:bold;">${u.dailyVisits} زيارة</span></td>`;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (e) { console.log(e); }
         }
 
         async function refreshTasks() {
             const email = localStorage.getItem('userEmail');
             const pin = localStorage.getItem('userPin');
-            const container = document.getElementById("tasks-container");
-            container.innerHTML = `<div class="no-tasks">🔄 جاري سحب التعديلات الجديدة من كليك أب...</div>`;
-
             try {
                 const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, pin })
                 });
                 const data = await response.json();
-                if (data.success) {
+                if (data.success && !data.isAdmin) {
                     localStorage.setItem('userTasks', JSON.stringify(data.user.tasks));
                     renderTasks(data.user.tasks);
-                } else {
-                    alert("فشل تحديث البيانات!");
                 }
-            } catch (err) {
-                alert("مشكلة في الاتصال بالسيرفر أثناء التحديث!");
-            }
+            } catch (err) { alert("فشل التحديث الحين!"); }
         }
 
         function renderTasks(tasks) {
             const container = document.getElementById("tasks-container");
             container.innerHTML = "";
-
-            if (tasks.length === 0) {
-                container.innerHTML = `<div class="no-tasks">عاش يا بطل! مفيش أي تاسكات نشطة باسمك حالياً في كليك أب.</div>`;
-                return;
-            }
+            if (tasks.length === 0) { container.innerHTML = `<div class="no-tasks">عاش يا بطل! مفيش أي تاسكات نشطة باسمك حالياً في كليك أب.</div>`; return; }
 
             tasks.forEach((task, index) => {
                 const card = document.createElement("div");
-                card.className = "task-card";
-                card.id = `task-card-${index}`;
-                card.style.animationDelay = `${index * 0.08}s`;
-
+                card.className = "task-card"; card.id = `task-card-${index}`;
                 let subtasksHTML = "";
-                task.subTasks.forEach(sub => {
-                    subtasksHTML += `
-                        <li>
-                            <input type="checkbox">
-                            <span style="margin-right: 12px; font-size: 14px; color: #e8e8e8; font-weight: 600;">${sub}</span>
-                        </li>`;
-                });
+                task.subTasks.forEach(sub => { subtasksHTML += `<li><input type="checkbox"><span style="margin-right:12px; font-size:14px; color:#e8e8e8; font-weight:600;">${sub}</span></li>`; });
 
                 card.innerHTML = `
-                    <div class="task-title" style="color: #ffffff; font-weight: 900; font-size: 18px; margin-bottom: 16px;">${task.title}</div>
-                    <div class="subtasks-label" style="color: var(--accent-color); font-size: 12px; font-weight: 700; margin-bottom: 12px;">📋 خطوات العمل الفرعية:</div>
-                    <ul class="subtasks-list" style="list-style: none; padding: 0; margin: 0 0 20px 0;">${subtasksHTML}</ul>
+                    <div class="task-title">${task.title}</div>
+                    <div class="subtasks-label">📋 خطوات العمل الفرعية:</div>
+                    <ul class="subtasks-list">${subtasksHTML}</ul>
                     <div class="timer-display" id="timer-display-${index}">00:00:00</div>
                     <div class="actions-area">
                         <button class="btn btn-start" id="btn-toggle-${index}" onclick="toggleTimer(${index})">⏱️ ابدأ العد</button>
                         <button class="btn btn-submit-timer" id="btn-submit-timer-${index}" onclick="submitWithTimer('${task.title}', ${index}, '${task.id}')" style="display: none;">✅ إنهاء وتسليم بالوقت</button>
                         <button class="btn btn-quick" id="btn-quick-${index}" onclick="quickSubmitTask('${task.title}', ${index}, '${task.id}')">✔️ تسليم سريع</button>
-                    </div>
-                `;
-
+                    </div>`;
                 container.appendChild(card);
                 activeTimers[index] = { seconds: 0, interval: null, running: false };
             });
@@ -1163,190 +1115,51 @@
             const timerDisplay = document.getElementById(`timer-display-${index}`);
 
             if (!timerObj.running) {
-                timerObj.running = true;
-                toggleBtn.innerText = "⏸️ إيقاف مؤقت";
-                toggleBtn.className = "btn btn-pause";
-                submitTimerBtn.style.display = "inline-block";
-                timerDisplay.classList.add("running");
-
-                timerObj.interval = setInterval(() => {
-                    timerObj.seconds++;
-                    timerDisplay.innerText = formatTime(timerObj.seconds);
-                }, 1000);
+                timerObj.running = true; toggleBtn.innerText = "⏸️ إيقاف مؤقت"; toggleBtn.className = "btn btn-pause";
+                submitTimerBtn.style.display = "inline-block"; timerDisplay.classList.add("running");
+                timerObj.interval = setInterval(() => { timerObj.seconds++; timerDisplay.innerText = formatTime(timerObj.seconds); }, 1000);
             } else {
-                timerObj.running = false;
-                toggleBtn.innerText = "⏱️ استئناف العد";
-                toggleBtn.className = "btn btn-start";
-                timerDisplay.classList.remove("running");
-                clearInterval(timerObj.interval);
+                timerObj.running = false; toggleBtn.innerText = "⏱️ استئناف العد"; toggleBtn.className = "btn btn-start";
+                timerDisplay.classList.remove("running"); clearInterval(timerObj.interval);
             }
         }
 
-        function formatTime(totalSeconds) {
-            const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-            const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-            const secs = (totalSeconds % 60).toString().padStart(2, '0');
-            return `${hrs}:${mins}:${secs}`;
-        }
-
-        function formatTimeArabic(totalSeconds) {
-            const hrs = Math.floor(totalSeconds / 3600);
-            const mins = Math.floor((totalSeconds % 3600) / 60);
-            const secs = totalSeconds % 60;
-            return `${hrs} ساعة و ${mins} دقيقة و ${secs} ثانية`;
-        }
+        function formatTime(t) { const h = Math.floor(t / 3600).toString().padStart(2, '0'), m = Math.floor((t % 3600) / 60).toString().padStart(2, '0'), s = (t % 60).toString().padStart(2, '0'); return `${h}:${m}:${s}`; }
 
         async function submitWithTimer(taskTitle, index, taskId) {
             const timerObj = activeTimers[index];
             clearInterval(timerObj.interval);
-            const finalTimeSpent = formatTimeArabic(timerObj.seconds);
-            const username = localStorage.getItem('username');
-
-            try {
-                const response = await fetch('/api/submit-task', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, taskTitle, timeSpent: `إنجاز حقيقي بالعداد استغرق: [${finalTimeSpent}]`, taskId })
-                });
-                if (response.ok) {
-                    alert(`✅ تم قفل وإغلاق التاسك في كليك أب بنجاح! الوقت المحسوب: [${formatTime(timerObj.seconds)}]`);
-                    removeCardFromScreen(taskTitle, index);
-                }
-            } catch (err) { alert("مشكلة في الاتصال بالسيرفر!"); }
+            const response = await fetch('/api/submit-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId }) });
+            if (response.ok) { alert("✅ تم إغلاق التاسك بنجاح في كليك أب!"); removeCardFromScreen(taskTitle, index); }
         }
-
         async function quickSubmitTask(taskTitle, index, taskId) {
-            const username = localStorage.getItem('username');
-            try {
-                const response = await fetch('/api/submit-task', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, taskTitle, timeSpent: "تسليم سريع مباشر (بدون عدارد)", taskId })
-                });
-                if (response.ok) {
-                    alert(`✔️ تم إنجاز المهمة وقفلها بنجاح في كليك أب أوتوماتيك!`);
-                    removeCardFromScreen(taskTitle, index);
-                }
-            } catch (err) { alert("مشكلة في الاتصال بالسيرفر!"); }
+            const response = await fetch('/api/submit-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId }) });
+            if (response.ok) { alert("✔️ تم تسليم المهمة وقفلها بنجاح!"); removeCardFromScreen(taskTitle, index); }
         }
-
         function removeCardFromScreen(taskTitle, index) {
             const card = document.getElementById(`task-card-${index}`);
-            if (card) {
-                card.style.opacity = '0';
-                card.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    card.remove();
-                    let tasks = JSON.parse(localStorage.getItem('userTasks')) || [];
-                    tasks = tasks.filter(t => t.title !== taskTitle);
-                    localStorage.setItem('userTasks', JSON.stringify(tasks));
-                    if (tasks.length === 0) renderTasks([]);
-                }, 300);
-            }
+            if (card) { card.remove(); let tasks = JSON.parse(localStorage.getItem('userTasks')) || []; tasks = tasks.filter(t => t.title !== taskTitle); localStorage.setItem('userTasks', JSON.stringify(tasks)); if (tasks.length === 0) renderTasks([]); }
         }
 
-        async function submitUnlistedTask() {
-            const taskTitle = prompt("اكتب عنوان أو اسم الشغل اللي خلصته:");
-            if (!taskTitle || taskTitle.trim() === "") return;
-
-            const username = localStorage.getItem('username');
-            try {
-                const response = await fetch('/api/submit-unlisted-task', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, taskTitle: taskTitle.trim() })
-                });
-                if (response.ok) alert("🚀 طار الإشعار لعمار بـ عنوان الشغل غير المدرج!");
-            } catch (err) { alert("مشكلة في الاتصال بالسيرفر!"); }
-        }
-
-        function logout() {
-            for (let key in activeTimers) { clearInterval(activeTimers[key].interval); }
-            localStorage.clear();
-            document.getElementById("dashboard-interface").style.display = "none";
-            switchToLogin();
-        }
-
-        function handleSubtaskKeydown(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                addSubtaskToPreview();
-            }
-        }
-
-        function addSubtaskToPreview() {
-            const input = document.getElementById("custom-subtask-input");
-            const text = input.value.trim();
-            if (!text) return;
-
-            customSubTasks.push(text);
-            renderSubtaskPreview();
-            input.value = "";
-            input.focus();
-        }
-
-        function removeSubtask(index) {
-            customSubTasks.splice(index, 1);
-            renderSubtaskPreview();
-        }
-
-        function renderSubtaskPreview() {
-            const list = document.getElementById("subtask-preview-list");
-            list.innerHTML = "";
-            customSubTasks.forEach((item, i) => {
-                const li = document.createElement("li");
-                li.innerHTML = `
-                    <span style="color:#f59e0b; margin-left:8px;">•</span>
-                    <span style="flex:1;">${item}</span>
-                    <button class="btn-remove-subtask" onclick="removeSubtask(${i})">✕</button>
-                `;
-                list.appendChild(li);
-            });
-        }
+        function logout() { localStorage.clear(); document.getElementById("dashboard-interface").style.display = "none"; switchToLogin(); }
+        function handleSubtaskKeydown(e) { if (e.key === 'Enter') { e.preventDefault(); addSubtaskToPreview(); } }
+        function addSubtaskToPreview() { const input = document.getElementById("custom-subtask-input"), text = input.value.trim(); if (!text) return; customSubTasks.push(text); renderSubtaskPreview(); input.value = ""; }
+        function removeSubtask(i) { customSubTasks.splice(i, 1); renderSubtaskPreview(); }
+        function renderSubtaskPreview() { const list = document.getElementById("subtask-preview-list"); list.innerHTML = ""; customSubTasks.forEach((item, i) => { const li = document.createElement("li"); li.innerHTML = `<span>• ${item}</span><button class="btn-remove-subtask" onclick="removeSubtask(${i})">✕</button>`; list.appendChild(li); }); }
 
         async function deployCustomTask() {
-            const titleInput = document.getElementById("custom-task-title");
-            const title = titleInput.value.trim();
-
-            if (!title) {
-                alert("⚠️ من فضلك اكتب عنوان المهمة أولاً!");
-                titleInput.focus();
-                return;
-            }
-
-            const email = localStorage.getItem('userEmail');
-            const deployBtn = document.getElementById("deploy-btn");
-
-            deployBtn.disabled = true;
-            deployBtn.innerText = "⏳ جاري الترحيل إلى كليك أب...";
+            const titleInput = document.getElementById("custom-task-title"), title = titleInput.value.trim();
+            if (!title) { alert("⚠️ اكتب عنوان المهمة أولاً!"); return; }
+            const email = localStorage.getItem('userEmail'), deployBtn = document.getElementById("deploy-btn");
+            deployBtn.disabled = true; deployBtn.innerText = "⏳ جاري الترحيل...";
 
             try {
                 const response = await fetch('/api/create-custom-task', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: email,
-                        title: title,
-                        subTasks: [...customSubTasks]
-                    })
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, title, subTasks: [...customSubTasks] })
                 });
-
-                if (response.ok) {
-                    alert(`✅ تم ترحيل المهمة "${title}" إلى كليك أب بنجاح! سيتم تحديث لوحة التحكم الآن.`);
-                    titleInput.value = "";
-                    customSubTasks = [];
-                    renderSubtaskPreview();
-                    refreshTasks();
-                } else {
-                    const errData = await response.json().catch(() => ({}));
-                    alert("⚠️ فشل الترحيل: " + (errData.message || "خطأ غير معروف."));
-                }
-            } catch (err) {
-                alert("مشكلة في الاتصال بالسيرفر!");
-            } finally {
-                deployBtn.disabled = false;
-                deployBtn.innerText = "🚀 ترحيل المهمة إلى كليك أب الحية";
-            }
+                if (response.ok) { alert(`✅ تم ترحيل المهمة بنجاح!`); titleInput.value = ""; customSubTasks = []; renderSubtaskPreview(); refreshTasks(); }
+            } catch (err) { alert("مشكلة اتصال!"); } finally { deployBtn.disabled = false; deployBtn.innerText = "🚀 ترحيل المهمة إلى كليك أب الحية"; }
         }
     </script>
 </body>
