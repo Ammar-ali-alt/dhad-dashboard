@@ -20,13 +20,16 @@ const CLICKUP_LIST_IDS = [
     '901810061524'
 ];
 
+// القائمة الافتراضية اللي هينزل فيها التاسكات اللي الأدمن بيضيفها بنفسه
+const DEFAULT_CREATION_LIST = '901809636671';
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user: MY_GMAIL, pass: MY_APP_PASSWORD }
 });
 
-function sendAdminApprovalEmail(req, fullName, email) {
-    const approvalLink = `${req.protocol}://${req.get('host')}/api/admin/approve-via-email?email=${encodeURIComponent(email)}`;
+function sendAdminApprovalEmail(hostUrl, fullName, email) {
+    const approvalLink = `${hostUrl}/api/admin/approve-via-email?email=${encodeURIComponent(email)}`;
     const mailOptions = {
         from: MY_GMAIL,
         to: MY_GMAIL,
@@ -45,7 +48,7 @@ function sendAdminApprovalEmail(req, fullName, email) {
             </div>
         `
     };
-    transporter.sendMail(mailOptions, (err) => { if (err) console.log('خطأ إيميل:', err); });
+    transporter.sendMail(mailOptions, (err) => { if (err) console.log('خطأ إيميل التسجيل:', err); });
 }
 
 let usersDatabase = {
@@ -60,8 +63,13 @@ let usersDatabase = {
 app.post('/api/signup', (req, res) => {
     const { fullName, email, pin } = req.body;
     if (usersDatabase[email]) return res.status(400).json({ success: false, message: "الإيميل مسجل بالفعل!" });
+
     usersDatabase[email] = { fullName, pin, status: "pending", dailyVisits: 0 };
-    sendAdminApprovalEmail(req, fullName, email);
+
+    // حل مشكلة الهوست في فيرسل
+    const hostUrl = `${req.protocol}://${req.get('host')}`;
+    sendAdminApprovalEmail(hostUrl, fullName, email);
+
     res.json({ success: true, message: "تم تسجيل بياناتك بنجاح! في انتظار موافقة تفعيل عمار علي." });
 });
 
@@ -95,8 +103,12 @@ app.post('/api/login', async (req, res) => {
 
         responses.forEach(response => {
             const listTasks = response.data.tasks || [];
+
+            // حل مشكلة ريفريش التاسكات المخلصة: فلترة صارمة بناءً على الإيميل وحالة الـ status
             const filtered = listTasks.filter(task => {
-                return task.assignees && task.assignees.some(assignee => assignee.email.toLowerCase() === email.toLowerCase());
+                const isAssigned = task.assignees && task.assignees.some(assignee => assignee.email.toLowerCase() === email.toLowerCase());
+                const isNotDone = task.status && task.status.status.toLowerCase() !== 'complete' && task.status.status.toLowerCase() !== 'done';
+                return isAssigned && isNotDone;
             }).map(task => ({
                 id: task.id,
                 title: task.name,
@@ -111,14 +123,56 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// ميزة جديدة: إنشاء تاسك مخصص ورفعه لكليك أب مباشرة باسم الأدمن
+app.post('/api/create-custom-task', async (req, res) => {
+    const { email, title, subTasks } = req.body;
+
+    try {
+        // 1. جلب بيانات مستخدم كليك اب عشان نعمله Assign لو متاح، أو هينزل في القائمة مباشرة
+        const clickupTaskData = {
+            name: title,
+            description: `تم إنشاؤه بواسطة الأدمن: ${email} عبر البوابة الذكية.`,
+            status: "to do"
+        };
+
+        const response = await axios.post(`https://api.clickup.com/api/v2/list/${DEFAULT_CREATION_LIST}/task`, clickupTaskData, {
+            headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
+        });
+
+        const createdTask = response.data;
+
+        // 2. إذا كان هناك خطوات فرعية، نقوم بإضافتها كـ Checklist داخل التاسك الجديد
+        if (subTasks && subTasks.length > 0) {
+            try {
+                const checklistResponse = await axios.post(`https://api.clickup.com/api/v2/task/${createdTask.id}/checklist`, { name: "خطوات التنفيذ" }, {
+                    headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
+                });
+                const checklistId = checklistResponse.data.checklist.id;
+
+                for (let sub of subTasks) {
+                    await axios.post(`https://api.clickup.com/api/v2/checklist/${checklistId}/checklist_item`, { name: sub }, {
+                        headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
+                    });
+                }
+            } catch (checkErr) { console.log("خطأ أثناء إضافة التشيك ليست للتاسك الجديد:", checkErr.message); }
+        }
+
+        res.json({ success: true, message: "تمت إضافة التاسك بنجاح في كليك أب الحية!" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "فشل ترحيل التاسك لكليك أب." });
+    }
+});
+
 app.post('/api/submit-task', async (req, res) => {
     const { username, taskTitle, timeSpent, taskId } = req.body;
     if (taskId) {
         try {
+            // تحديث حالة التاسك لـ complete في كليك اب فوراً
             await axios.put(`https://api.clickup.com/api/v2/task/${taskId}`, { status: 'complete' }, {
                 headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
             });
-        } catch (clickUpErr) { console.log(clickUpErr.message); }
+        } catch (clickUpErr) { console.log("خطأ قفل تاسك كليك اب:", clickUpErr.message); }
     }
     const mailOptions = {
         from: MY_GMAIL, to: MY_GMAIL,
