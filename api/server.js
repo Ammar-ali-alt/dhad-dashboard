@@ -21,16 +21,18 @@ const CLICKUP_LIST_IDS = [
 ];
 
 // القائمة الافتراضية لترحيل التاسكات الجديدة المخصصة
-const DEFAULT_CREATION_LIST = '901809636671';
+const DEFAULT_CREATION_LIST = '901809636671'; 
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user: MY_GMAIL, pass: MY_APP_PASSWORD }
 });
 
-// تصليح دالة إرسال الإيميل وقراءة الهوست بشكل صحيح
-function sendAdminApprovalEmail(hostUrl, fullName, email) {
-    const approvalLink = `${hostUrl}/api/admin/approve-via-email?email=${encodeURIComponent(email)}`;
+// تثبيت الدومين الحقيقي هنا لمنع الـ ضرب في Vercel
+function sendAdminApprovalEmail(fullName, email) {
+    const domain = 'https://dhad-dashboard-eiji.vercel.app'; // الدومين بتاعك من السكرين شوت
+    const approvalLink = `${domain}/api/admin/approve-via-email?email=${encodeURIComponent(email)}`;
+    
     const mailOptions = {
         from: MY_GMAIL,
         to: MY_GMAIL,
@@ -64,13 +66,12 @@ let usersDatabase = {
 app.post('/api/signup', (req, res) => {
     const { fullName, email, pin } = req.body;
     if (usersDatabase[email]) return res.status(400).json({ success: false, message: "الإيميل مسجل بالفعل!" });
-
+    
     usersDatabase[email] = { fullName, pin, status: "pending", dailyVisits: 0 };
-
-    // بناء الرابط الحقيقي بدقة لمنع الـ Undefined في فيرسل
-    const hostUrl = `${req.protocol}://${req.get('host')}`;
-    sendAdminApprovalEmail(hostUrl, fullName, email);
-
+    
+    // استدعاء الدالة المصلحة والآمنة
+    sendAdminApprovalEmail(fullName, email);
+    
     res.json({ success: true, message: "تم تسجيل بياناتك بنجاح! في انتظار موافقة تفعيل عمار علي." });
 });
 
@@ -108,7 +109,7 @@ app.post('/api/login', async (req, res) => {
                 const isAssigned = task.assignees && task.assignees.some(assignee => assignee.email.toLowerCase() === email.toLowerCase());
                 const isCreatedByHim = task.description && task.description.includes(email);
                 const isNotDone = task.status && task.status.status.toLowerCase() !== 'complete' && task.status.status.toLowerCase() !== 'done';
-
+                
                 return (isAssigned || isCreatedByHim) && isNotDone;
             }).map(task => ({
                 id: task.id,
@@ -124,10 +125,10 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// 🟢 الـ Endpoint المفقودة لترحيل الـ Custom Tasks لكليك أب 🟢
+// 🟢 استقبال ترحيل التاسكات المخصصة لكليك أب 🟢
 app.post('/api/create-custom-task', async (req, res) => {
     const { email, title, subTasks } = req.body;
-
+    
     try {
         const clickupTaskData = {
             name: title,
@@ -147,7 +148,7 @@ app.post('/api/create-custom-task', async (req, res) => {
                     headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
                 });
                 const checklistId = checklistResponse.data.checklist.id;
-
+                
                 for (let sub of subTasks) {
                     await axios.post(`https://api.clickup.com/api/v2/checklist/${checklistId}/checklist_item`, { name: sub }, {
                         headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
