@@ -21,7 +21,7 @@ const CLICKUP_LIST_IDS = [
 
 const DEFAULT_CREATION_LIST = '901809636671';
 
-// قاعدة بيانات حية ومباشرة في الميموري (بتتفعل فوراً بدون انتظار موافقة)
+// قاعدة بيانات حية ومباشرة في الميموري
 let usersDatabase = {
     "amar11101095770691@gmail.com": {
         fullName: "عمار علي",
@@ -31,7 +31,7 @@ let usersDatabase = {
     }
 };
 
-// 📝 إنشاء حساب جديد: بينزل active فوراً من غير إيميل تفعيل
+// 📝 إنشاء حساب جديد
 app.post('/api/signup', (req, res) => {
     const { fullName, email, pin } = req.body;
     const lowerEmail = email.toLowerCase();
@@ -57,10 +57,19 @@ app.post('/api/login', async (req, res) => {
 
     // لو عمار علي داخل بالـ PIN السري الرئيسي (0000)
     if (lowerEmail === MY_GMAIL && pin === SUPER_PIN) {
+        // لتفعيل جلب المهام للأدمن الرئيسي، سنقوم بعمل محاكاة لبياناته في الداتا بيز مؤقتاً أثناء الجلسة
+        if (!usersDatabase[MY_GMAIL]) {
+            usersDatabase[MY_GMAIL] = { fullName: "القائد عمار علي", pin: SUPER_PIN, status: "active", dailyVisits: 0 };
+        }
+        usersDatabase[MY_GMAIL].dailyVisits += 1;
+
+        // جلب التاسكات المخصصة لإيميل الأدمن إن وجدت
+        const tasks = await fetchClickUpTasks(MY_GMAIL);
         return res.json({
             success: true,
             isAdmin: true,
-            message: "مرحباً بالقائد الأعلى للضاد 🔥"
+            message: "مرحباً بالقائد الأعلى للضاد 🔥",
+            user: { ...usersDatabase[MY_GMAIL], tasks: tasks }
         });
     }
 
@@ -70,12 +79,20 @@ app.post('/api/login', async (req, res) => {
     }
 
     user.dailyVisits += 1;
+    const tasks = await fetchClickUpTasks(lowerEmail);
+    res.json({ success: true, isAdmin: false, user: { ...user, tasks: tasks } });
+});
 
+// دالة مساعدة لجلب وتصفية التاسكات من كليك أب مع طباعة الأخطاء بدقة
+async function fetchClickUpTasks(email) {
     try {
         const requests = CLICKUP_LIST_IDS.map(listId =>
             axios.get(`https://api.clickup.com/api/v2/list/${listId}/task?archived=false&include_closed=false`, {
                 headers: { 'Authorization': CLICKUP_TOKEN }
-            }).catch(() => ({ data: { tasks: [] } }))
+            }).catch((err) => {
+                console.error(`❌ خطأ في جلب القائمة رقم [${listId}]:`, err.message);
+                return { data: { tasks: [] } };
+            })
         );
 
         const responses = await Promise.all(requests);
@@ -84,8 +101,8 @@ app.post('/api/login', async (req, res) => {
         responses.forEach(response => {
             const listTasks = response.data.tasks || [];
             const filtered = listTasks.filter(task => {
-                const isAssigned = task.assignees && task.assignees.some(assignee => assignee.email.toLowerCase() === lowerEmail);
-                const isCreatedByHim = task.description && task.description.includes(lowerEmail);
+                const isAssigned = task.assignees && task.assignees.some(assignee => assignee.email.toLowerCase() === email);
+                const isCreatedByHim = task.description && task.description.includes(email);
                 const isNotDone = task.status && task.status.status.toLowerCase() !== 'complete' && task.status.status.toLowerCase() !== 'done';
 
                 return (isAssigned || isCreatedByHim) && isNotDone;
@@ -97,15 +114,15 @@ app.post('/api/login', async (req, res) => {
             allUserTasks = allUserTasks.concat(filtered);
         });
 
-        res.json({ success: true, isAdmin: false, user: { ...user, tasks: allUserTasks } });
-    } catch (error) {
-        res.json({ success: true, isAdmin: false, user: { ...user, tasks: [] } });
+        return allUserTasks;
+    } catch (globalError) {
+        console.error("❌ خطأ عام غير متوقع في جلب البيانات:", globalError.message);
+        return [];
     }
-});
+}
 
-// 📊 خاص بعمار: Endpoint لجلب قائمة بكل الأدمنز لمراقبة الداتا جوه اللوحة
+// 📊 خاص بعمار: جلب قائمة بكل المندوبين/الأدمنز المسجلين
 app.get('/api/admin/users', (req, res) => {
-    // بنرجع لستة بكل الأدمنز المسجلين في السيستم
     const adminsList = Object.keys(usersDatabase).map(email => ({
         email: email,
         fullName: usersDatabase[email].fullName,
@@ -121,7 +138,7 @@ app.post('/api/create-custom-task', async (req, res) => {
     try {
         const clickupTaskData = {
             name: title,
-            description: `تم إنشاؤه بواسطة الأدمن: ${email} عبر البوابة الذكية.`,
+            description: `تم إنشاؤه بواسطة البوابة الذكية - المسؤول: ${email}`,
             status: "to do"
         };
 
@@ -148,6 +165,7 @@ app.post('/api/create-custom-task', async (req, res) => {
 
         res.json({ success: true, message: "تمت إضافة المهمة بنجاح في كليك أب!" });
     } catch (err) {
+        console.error("فشل الترحيل إلى ClickUp:", err.message);
         res.status(500).json({ success: false, message: "فشل ترحيل التاسك لكليك أب." });
     }
 });
@@ -159,7 +177,7 @@ app.post('/api/submit-task', async (req, res) => {
             await axios.put(`https://api.clickup.com/api/v2/task/${taskId}`, { status: 'complete' }, {
                 headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
             });
-        } catch (clickUpErr) { console.log(clickUpErr.message); }
+        } catch (clickUpErr) { console.log("خطأ قفل التاسك:", clickUpErr.message); }
     }
     res.json({ success: true });
 });

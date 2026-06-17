@@ -97,17 +97,8 @@
         }
 
         @keyframes breathingGlow {
-
-            0%,
-            100% {
-                filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.2));
-                transform: scale(1);
-            }
-
-            50% {
-                filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.5));
-                transform: scale(1.02);
-            }
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.2)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.5)); transform: scale(1.02); }
         }
 
         .auth-box {
@@ -176,9 +167,7 @@
             transition: var(--transition);
         }
 
-        .auth-toggle-text span:hover {
-            text-shadow: 0 0 8px var(--accent-color);
-        }
+        .auth-toggle-text span:hover { text-shadow: 0 0 8px var(--accent-color); }
 
         .header {
             display: flex;
@@ -195,20 +184,9 @@
             color: #fff;
         }
 
-        .welcome-text h2 span {
-            color: var(--accent-color);
-        }
-
-        .welcome-text p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
+        .welcome-text h2 span { color: var(--accent-color); }
+        .welcome-text p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+        .header-actions { display: flex; gap: 12px; }
 
         .btn-refresh {
             background: rgba(245, 158, 11, 0.05);
@@ -281,23 +259,9 @@
             gap: 8px;
         }
 
-        .intro-card p {
-            font-size: 13px;
-            color: #c0c0c0;
-            line-height: 1.7;
-        }
-
-        .founders-display {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .founder-profile {
-            text-align: center;
-            flex: 1;
-        }
+        .intro-card p { font-size: 13px; color: #c0c0c0; line-height: 1.7; }
+        .founders-display { display: flex; gap: 16px; justify-content: center; margin-top: 15px; }
+        .founder-profile { text-align: center; flex: 1; }
 
         .founder-avatar {
             width: 70px;
@@ -316,16 +280,8 @@
             box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        .founder-name {
-            font-size: 13px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .founder-role {
-            font-size: 11px;
-            color: var(--accent-color);
-        }
+        .founder-name { font-size: 13px; font-weight: 700; color: #fff; }
+        .founder-role { font-size: 11px; color: var(--accent-color); }
 
         .section-label {
             font-size: 14px;
@@ -375,25 +331,9 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
         }
 
-        .task-title {
-            font-size: 18px;
-            font-weight: 900;
-            margin-bottom: 16px;
-            color: #ffffff;
-        }
-
-        .subtasks-label {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--accent-color);
-            margin-bottom: 12px;
-        }
-
-        .subtasks-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 20px 0;
-        }
+        .task-title { font-size: 18px; font-weight: 900; margin-bottom: 16px; color: #ffffff; }
+        .subtasks-label { font-size: 12px; font-weight: 700; color: var(--accent-color); margin-bottom: 12px; }
+        .subtasks-list { list-style: none; padding: 0; margin: 0 0 20px 0; }
 
         .subtasks-list li {
             padding: 10px 14px;
@@ -403,17 +343,8 @@
             transition: background 0.2s;
         }
 
-        .subtasks-list li:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .subtasks-list input[type="checkbox"] {
-            margin-left: 12px;
-            width: 18px;
-            height: 18px;
-            accent-color: var(--accent-color);
-            cursor: pointer;
-        }
+        .subtasks-list li:hover { background: rgba(255, 255, 255, 0.02); }
+        .subtasks-list input[type="checkbox"] { margin-left: 12px; width: 18px; height: 18px; accent-color: var(--accent-color); cursor: pointer; }
 
         .timer-display {
             font-family: 'Courier New', Courier, monospace;
@@ -437,25 +368,11 @@
         }
 
         @keyframes pulseTimer {
-
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.85;
-                transform: scale(0.99);
-            }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(0.99); }
         }
 
-        .actions-area {
-            display: flex;
-            gap: 12px;
-            margin-top: 18px;
-            flex-wrap: wrap;
-        }
+        .actions-area { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
 
         .btn {
             border: none;
@@ -468,39 +385,12 @@
             transition: var(--transition);
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-btn);
-        }
-
-        .btn-start {
-            background: linear-gradient(135deg, var(--accent-color), var(--accent-deep));
-            color: #000;
-        }
-
-        .btn-pause {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: #fff;
-        }
-
-        .btn-quick {
-            background: linear-gradient(135deg, var(--green-color), #059669);
-            color: #fff;
-        }
-
-        .btn-submit-timer {
-            background: linear-gradient(135deg, #059669, #047857);
-            color: #fff;
-        }
-
-        .btn-auth {
-            background: linear-gradient(135deg, var(--accent-color), var(--accent-deep));
-            color: #000;
-            width: 100%;
-            font-weight: 900;
-            margin-top: 10px;
-            font-size: 15px;
-        }
+        .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-btn); }
+        .btn-start { background: linear-gradient(135deg, var(--accent-color), var(--accent-deep)); color: #000; }
+        .btn-pause { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+        .btn-quick { background: linear-gradient(135deg, var(--green-color), #059669); color: #fff; }
+        .btn-submit-timer { background: linear-gradient(135deg, #059669, #047857); color: #fff; }
+        .btn-auth { background: linear-gradient(135deg, var(--accent-color), var(--accent-deep)); color: #000; width: 100%; font-weight: 900; margin-top: 10px; font-size: 15px; }
 
         .custom-task-section {
             margin-top: 36px;
@@ -511,25 +401,9 @@
             transition: var(--transition);
         }
 
-        .custom-task-section:hover {
-            border-color: var(--glass-border-hover);
-        }
-
-        .custom-task-section h3 {
-            font-size: 17px;
-            font-weight: 900;
-            color: var(--accent-color);
-            margin-bottom: 22px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .subtask-adder {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
+        .custom-task-section:hover { border-color: var(--glass-border-hover); }
+        .custom-task-section h3 { font-size: 17px; font-weight: 900; color: var(--accent-color); margin-bottom: 22px; display: flex; align-items: center; gap: 8px; }
+        .subtask-adder { display: flex; gap: 12px; margin-bottom: 16px; }
 
         .subtask-adder input {
             flex: 1;
@@ -555,16 +429,8 @@
             transition: var(--transition);
         }
 
-        .btn-add-subtask:hover {
-            background: rgba(245, 158, 11, 0.18);
-            border-color: var(--accent-color);
-        }
-
-        .subtask-preview-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 20px 0;
-        }
+        .btn-add-subtask:hover { background: rgba(245, 158, 11, 0.18); border-color: var(--accent-color); }
+        .subtask-preview-list { list-style: none; padding: 0; margin: 0 0 20px 0; }
 
         .subtask-preview-list li {
             display: flex;
@@ -578,18 +444,8 @@
             font-size: 13px;
         }
 
-        .btn-remove-subtask {
-            background: none;
-            border: none;
-            color: #666;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-right: 6px;
-        }
-
-        .btn-remove-subtask:hover {
-            color: var(--red-color);
-        }
+        .btn-remove-subtask { background: none; border: none; color: #666; cursor: pointer; transition: var(--transition); margin-right: 6px; }
+        .btn-remove-subtask:hover { color: var(--red-color); }
 
         .btn-deploy {
             background: linear-gradient(135deg, var(--accent-color), #f97316);
@@ -606,45 +462,12 @@
             box-shadow: 0 6px 20px rgba(245, 158, 11, 0.25);
         }
 
-        .admins-section {
-            margin-top: 36px;
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: 20px;
-            padding: 24px;
-        }
+        .admins-section { margin-top: 36px; background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 20px; padding: 24px; }
+        .admins-grid { display: flex; gap: 24px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+        .admin-showcase-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 18px; padding: 20px; text-align: center; transition: var(--transition); min-width: 140px; flex: 1; max-width: 200px; }
+        .admin-showcase-avatar { width: 70px; height: 70px; border-radius: 50%; margin-bottom: 8px; border: 2px solid var(--glass-border); object-fit: cover; background: #151515; }
 
-        .admins-grid {
-            display: flex;
-            gap: 24px;
-            justify-content: center;
-            margin-top: 16px;
-            flex-wrap: wrap;
-        }
-
-        .admin-showcase-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 18px;
-            padding: 20px;
-            text-align: center;
-            transition: var(--transition);
-            min-width: 140px;
-            flex: 1;
-            max-width: 200px;
-        }
-
-        .admin-showcase-avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            margin-bottom: 8px;
-            border: 2px solid var(--glass-border);
-            object-fit: cover;
-            background: #151515;
-        }
-
-        /* ── 📊 SUPER ADMIN INTERFACE (خاصة بعمار) ── */
+        /* ── 📊 SUPER ADMIN INTERFACE ── */
         .super-admin-interface {
             margin-top: 36px;
             padding: 30px;
@@ -654,44 +477,13 @@
             display: none;
         }
 
-        .super-admin-interface h3 {
-            color: #10b981;
-            font-size: 18px;
-            font-weight: 900;
-            margin-bottom: 18px;
-        }
+        .super-admin-interface h3 { color: #10b981; font-size: 18px; font-weight: 900; margin-bottom: 18px; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 12px; text-align: right; }
+        .admin-table th, .admin-table td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 14px; }
+        .admin-table th { color: var(--accent-color); font-weight: 700; }
 
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
-            text-align: right;
-        }
-
-        .admin-table th,
-        .admin-table td {
-            padding: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            font-size: 14px;
-        }
-
-        .admin-table th {
-            color: var(--accent-color);
-            font-weight: 700;
-        }
-
-        .unlisted-section {
-            text-align: center;
-            margin-top: 32px;
-            border-top: 1px solid var(--glass-border);
-            padding-top: 24px;
-        }
-
-        .unlisted-section p {
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-bottom: 14px;
-        }
+        .unlisted-section { text-align: center; margin-top: 32px; border-top: 1px solid var(--glass-border); padding-top: 24px; }
+        .unlisted-section p { color: var(--text-muted); font-size: 13px; margin-bottom: 14px; }
 
         .btn-unlisted {
             background: rgba(59, 130, 246, 0.08);
@@ -705,86 +497,21 @@
             transition: var(--transition);
         }
 
-        .btn-unlisted:hover {
-            background: rgba(59, 130, 246, 0.18);
-            border-color: var(--blue-color);
-            transform: translateY(-2px);
-        }
+        .btn-unlisted:hover { background: rgba(59, 130, 246, 0.18); border-color: var(--blue-color); transform: translateY(-2px); }
+        .support-section { margin-top: 24px; background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 18px; text-align: center; }
+        .support-section h4 { font-size: 13px; color: #555; margin-bottom: 12px; }
+        .support-links { display: flex; justify-content: center; gap: 24px; }
+        .support-links a { color: var(--accent-color); text-decoration: none; font-weight: 700; font-size: 13px; transition: var(--transition); }
 
-        .support-section {
-            margin-top: 24px;
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 18px;
-            text-align: center;
-        }
+        .no-tasks { text-align: center; color: #666; padding: 40px 20px; border: 1px dashed rgba(255, 255, 255, 0.05); border-radius: 14px; background: var(--glass-bg); }
 
-        .support-section h4 {
-            font-size: 13px;
-            color: #555;
-            margin-bottom: 12px;
-        }
-
-        .support-links {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-        }
-
-        .support-links a {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 13px;
-            transition: var(--transition);
-        }
-
-        .no-tasks {
-            text-align: center;
-            color: #666;
-            padding: 40px 20px;
-            border: 1px dashed rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            background: var(--glass-bg);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 768px) {
-            .intro-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .container {
-                padding: 24px;
-            }
-
-            .header {
-                flex-direction: column;
-                gap: 16px;
-                align-items: flex-start;
-            }
+            .intro-grid { grid-template-columns: 1fr; }
+            .container { padding: 24px; }
+            .header { flex-direction: column; gap: 16px; align-items: flex-start; }
         }
     </style>
 </head>
@@ -838,7 +565,7 @@
             <div class="header">
                 <div class="welcome-text">
                     <h2>مرحباً، <span id="user-name">الأدمن</span> 👋</h2>
-                    <p>لوحة متابعة وإنجاز تاسكات كليك أب الحية</p>
+                    <p>لوحة متابعة وإنجاز تأسكات كليك أب الحية</p>
                 </div>
                 <div class="header-actions">
                     <button class="btn-refresh" id="refresh-btn-area" onclick="refreshTasks()">🔄 تحديث الشغل</button>
@@ -848,8 +575,7 @@
 
             <div id="super-admin-area" class="super-admin-interface">
                 <h3>👑 لوحة القائد (مراقبة داتا الأدمنز)</h3>
-                <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">قائمة بجميع مسؤولي الضاد الذين
-                    سجلوا في النظام وعدد زياراتهم الحية للمنصة:</p>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">قائمة بجميع مسؤولي الضاد الذين سجلوا في النظام وعدد زياراتهم الحية للمنصة:</p>
                 <table class="admin-table">
                     <thead>
                         <tr>
@@ -869,9 +595,7 @@
             <div class="intro-grid" id="intro-grid-area">
                 <div class="intro-card">
                     <h3>📜 عن مجتمع الضاد</h3>
-                    <p>كيان طموح يهدف إلى قيادة وتطوير المحتوى العربي الرقمي والارتقاء بجودته. نوثق الرؤى, ونصنع
-                        الأفكار، ونمكّن المبدعين من إدارة وهيكلة مشاريعهم البرمجية والفنية بأعلى معايير الجودة
-                        التنفيذية.</p>
+                    <p>كيان طموح يهدف إلى قيادة وتطوير المحتوى العربي الرقمي والارتقاء بجودته. نوثق الرؤى, ونصنع الأفكار، ونمكّن المبدعين من إدارة وهيكلة مشاريعهم البرمجية والفنية بأعلى معايير الجودة التنفيذية.</p>
                 </div>
                 <div class="intro-card" style="display: flex; flex-direction: column; justify-content: space-between;">
                     <h3>👑 قيادة المجتمع</h3>
@@ -906,14 +630,12 @@
                 <div class="input-group">
                     <label>أضف خطوات فرعية (تاسكات صغيرة):</label>
                     <div class="subtask-adder">
-                        <input type="text" id="custom-subtask-input" placeholder="اكتب خطوة فرعية ثم اضغط إضافة..."
-                            onkeydown="handleSubtaskKeydown(event)">
+                        <input type="text" id="custom-subtask-input" placeholder="اكتب خطوة فرعية ثم اضغط إضافة..." onkeydown="handleSubtaskKeydown(event)">
                         <button class="btn-add-subtask" onclick="addSubtaskToPreview()">+ إضافة</button>
                     </div>
                     <ul class="subtask-preview-list" id="subtask-preview-list"></ul>
                 </div>
-                <button class="btn-deploy" id="deploy-btn" onclick="deployCustomTask()">🚀 ترحيل المهمة إلى كليك أب
-                    الحية</button>
+                <button class="btn-deploy" id="deploy-btn" onclick="deployCustomTask()">🚀 ترحيل المهمة إلى كليك أب الحية</button>
             </div>
 
             <div class="admins-section">
@@ -1019,14 +741,15 @@
                     if (data.isAdmin) {
                         localStorage.setItem('isAdmin', 'true');
                         localStorage.setItem('username', 'القائد عمار علي');
+                        localStorage.setItem('userTasks', JSON.stringify(data.user.tasks || []));
                     } else {
                         localStorage.setItem('isAdmin', 'false');
                         localStorage.setItem('username', data.user.fullName);
-                        localStorage.setItem('userTasks', JSON.stringify(data.user.tasks));
+                        localStorage.setItem('userTasks', JSON.stringify(data.user.tasks || []));
                     }
                     showDashboard();
                 } else { alert(data.message); }
-            } catch (err) { alert("مشكلة في الاتصال بالسيرفر!"); }
+            } catch (err) { alert("مشكلة في الاتصال بالسيرفر أو الربط الفني!"); }
         }
 
         function showDashboard() {
@@ -1037,17 +760,20 @@
             const username = localStorage.getItem('username');
             document.getElementById("user-name").innerText = username;
 
+            // 🟢 تعديل رئيسي: إبقاء أدوات التحكم والتحديث والتأسكات نشطة لجميع الحسابات (بما فيهم الأدمن الرئيسي)
+            document.getElementById("tasks-section-area").style.display = "block";
+            document.getElementById("custom-task-area").style.display = "block";
+            document.getElementById("refresh-btn-area").style.display = "inline-block";
+
             if (localStorage.getItem('isAdmin') === 'true') {
                 document.getElementById("super-admin-area").style.display = "block";
-                document.getElementById("tasks-section-area").style.display = "none";
-                document.getElementById("custom-task-area").style.display = "none";
-                document.getElementById("refresh-btn-area").style.display = "none";
                 fetchAdminsList();
             } else {
                 document.getElementById("super-admin-area").style.display = "none";
-                const tasks = JSON.parse(localStorage.getItem('userTasks')) || [];
-                renderTasks(tasks);
             }
+
+            const tasks = JSON.parse(localStorage.getItem('userTasks')) || [];
+            renderTasks(tasks);
         }
 
         async function fetchAdminsList() {
@@ -1069,23 +795,27 @@
         async function refreshTasks() {
             const email = localStorage.getItem('userEmail');
             const pin = localStorage.getItem('userPin');
+            const refreshBtn = document.getElementById("refresh-btn-area");
+            refreshBtn.innerText = "⏳ جاري التحديث...";
+            
             try {
                 const response = await fetch('/api/login', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, pin })
                 });
                 const data = await response.json();
-                if (data.success && !data.isAdmin) {
-                    localStorage.setItem('userTasks', JSON.stringify(data.user.tasks));
-                    renderTasks(data.user.tasks);
+                if (data.success) {
+                    localStorage.setItem('userTasks', JSON.stringify(data.user.tasks || []));
+                    renderTasks(data.user.tasks || []);
                 }
-            } catch (err) { alert("فشل التحديث الحين!"); }
+            } catch (err) { alert("فشل التحديث الفوري الحين!"); }
+            finally { refreshBtn.innerText = "🔄 تحديث الشغل"; }
         }
 
         function renderTasks(tasks) {
             const container = document.getElementById("tasks-container");
             container.innerHTML = "";
-            if (tasks.length === 0) { container.innerHTML = `<div class="no-tasks">عاش يا بطل! مفيش أي تاسكات نشطة باسمك حالياً في كليك أب.</div>`; return; }
+            if (tasks.length === 0) { container.innerHTML = `<div class="no-tasks">عاش يا بطل! مفيش أي تأسكات نشطة باسمك حالياً في كليك أب.</div>`; return; }
 
             tasks.forEach((task, index) => {
                 const card = document.createElement("div");
@@ -1159,7 +889,14 @@
                     body: JSON.stringify({ email, title, subTasks: [...customSubTasks] })
                 });
                 if (response.ok) { alert(`✅ تم ترحيل المهمة بنجاح!`); titleInput.value = ""; customSubTasks = []; renderSubtaskPreview(); refreshTasks(); }
-            } catch (err) { alert("مشكلة اتصال!"); } finally { deployBtn.disabled = false; deployBtn.innerText = "🚀 ترحيل المهمة إلى كليك أب الحية"; }
+            } catch (err) { alert("مشكلة اتصال أثناء محاولة الترحيل!"); } finally { deployBtn.disabled = false; deployBtn.innerText = "🚀 ترحيل المهمة إلى كليك أب الحية"; }
+        }
+        
+        async function submitUnlistedTask() {
+            try {
+                await fetch('/api/submit-unlisted-task', { method: 'POST' });
+                alert("📢 تم تسجيل تسليم المهمة غير المدرجة بنجاح!");
+            } catch(e) { alert("خطأ في الاتصال"); }
         }
     </script>
 </body>
