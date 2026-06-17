@@ -216,6 +216,32 @@
             color: var(--red-color);
         }
 
+        .filter-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .filter-btn {
+            padding: 6px 14px;
+            font-size: 12px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .filter-btn.active {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
         .super-admin-interface {
             margin-top: 36px;
             padding: 30px;
@@ -341,6 +367,16 @@
             width: 4px;
             height: 100%;
             background: linear-gradient(to bottom, var(--accent-color), transparent);
+        }
+
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
         }
 
         .task-title {
@@ -606,7 +642,7 @@
             <div class="header">
                 <div class="welcome-text">
                     <h2>مرحباً، <span id="user-name">الأدمن</span> 👋</h2>
-                    <p>لوحة متابعة وإنجاز تأسكات كليك أب الحية للمسؤولين</p>
+                    <p>لوحة متابعة وإنجاز تأسكات شهر يونيو الموحدة</p>
                 </div>
                 <div class="header-actions">
                     <button class="btn btn-refresh" id="refresh-btn-area" onclick="refreshTasks()">🔄 تحديث
@@ -659,14 +695,19 @@
             </div>
 
             <div class="tasks-section" id="tasks-section-area">
-                <div class="section-label">⚡ التأسكات النشطة المخصصة لك حالياً</div>
+                <div class="section-label">⚡ تأسكات شهر يونيو (مرتبة من الأقرب للأبعد ديدلاين)</div>
+
+                <div class="filter-area" id="department-filters">
+                    <button class="filter-btn active" onclick="filterByDept('الكل')">الكل</button>
+                </div>
+
                 <div id="tasks-container">
-                    <div class="no-tasks">جاري جلب خطة العمل الحية من كليك أب...</div>
+                    <div class="no-tasks">جاري جلب خطة عمل يونيو الحية...</div>
                 </div>
             </div>
 
             <div class="custom-task-section" id="custom-task-area">
-                <h3>➕ إضافة مهمة مخصصة إلى كليك أب</h3>
+                <h3>➕ إضافة مهمة مخصصة إلى كليك أب يونيو الموحد</h3>
                 <div class="input-group">
                     <label>عنوان المهمة الأساسية:</label>
                     <input type="text" id="custom-task-title" placeholder="اكتب عنوان المهمة الجديدة هنا...">
@@ -703,6 +744,8 @@
     <script>
         let activeTimers = {};
         let customSubTasks = [];
+        let currentLoadedTasks = [];
+        let activeSelectedDept = "الكل";
 
         const canvas = document.getElementById('ambient-canvas');
         const ctx = canvas.getContext('2d');
@@ -774,7 +817,30 @@
             } else {
                 document.getElementById("super-admin-area").style.display = "none";
             }
-            renderTasks(JSON.parse(localStorage.getItem('userTasks')) || []);
+
+            currentLoadedTasks = JSON.parse(localStorage.getItem('userTasks')) || [];
+            buildDepartmentFilters(currentLoadedTasks);
+            renderTasksSorted(currentLoadedTasks);
+        }
+
+        function buildDepartmentFilters(tasks) {
+            const filterArea = document.getElementById("department-filters");
+            filterArea.innerHTML = `<button class="filter-btn ${activeSelectedDept === 'الكل' ? 'active' : ''}" onclick="filterByDept('الكل')">الكل</button>`;
+
+            const depts = [...new Set(tasks.map(t => t.department))];
+            depts.forEach(d => {
+                if (d && d !== "عام") {
+                    filterArea.innerHTML += `<button class="filter-btn ${activeSelectedDept === d ? 'active' : ''}" onclick="filterByDept('${d}')">${d}</button>`;
+                }
+            });
+        }
+
+        function filterByDept(dept) {
+            activeSelectedDept = dept;
+            const btns = document.querySelectorAll(".filter-btn");
+            btns.forEach(b => b.classList.remove("active"));
+            if (event && event.target) event.target.classList.add("active");
+            renderTasksSorted(currentLoadedTasks);
         }
 
         async function fetchAdminsList() {
@@ -804,24 +870,46 @@
                 const data = await response.json();
                 if (data.success) {
                     localStorage.setItem('userTasks', JSON.stringify(data.user.tasks || []));
-                    renderTasks(data.user.tasks || []);
+                    currentLoadedTasks = data.user.tasks || [];
+                    buildDepartmentFilters(currentLoadedTasks);
+                    renderTasksSorted(currentLoadedTasks);
                     if (data.isAdmin) fetchAdminsList();
                 }
-            } catch (err) { alert("فشل تحديث خطة العمل الحين!"); }
+            } catch (err) { alert("فشل تحديث خطة العمل الحالية!"); }
         }
 
-        function renderTasks(tasks) {
+        function renderTasksSorted(tasks) {
             const container = document.getElementById("tasks-container");
             container.innerHTML = "";
-            if (tasks.length === 0) { container.innerHTML = `<div class="no-tasks">عاش يا بطل! مفيش أي تأسكات نشطة باسمك حالياً في كليك أب. جرب سجل بإيميل آخر لو عندك صلاحية ثانية.</div>`; return; }
 
-            tasks.forEach((task, index) => {
+            let filteredTasks = tasks;
+            if (activeSelectedDept !== "الكل") {
+                filteredTasks = tasks.filter(t => t.department === activeSelectedDept);
+            }
+
+            // ترتيب زمني لايف: الأقرب فالأقرب استحقاقاً للديدلاين
+            filteredTasks.sort((a, b) => {
+                if (a.dueDateRaw === 0) return 1;
+                if (b.dueDateRaw === 0) return -1;
+                return a.dueDateRaw - b.dueDateRaw;
+            });
+
+            if (filteredTasks.length === 0) {
+                container.innerHTML = `<div class="no-tasks">عاش يا بطل! مفيش أي تأسكات نشطة لشهر يونيو في قسم [ ${activeSelectedDept} ] حالياً.</div>`;
+                return;
+            }
+
+            filteredTasks.forEach((task, index) => {
                 const card = document.createElement("div");
                 card.className = "task-card"; card.id = `task-card-${index}`;
                 let subs = "";
                 task.subTasks.forEach(s => { subs += `<li><input type="checkbox"><span>${s}</span></li>`; });
 
                 card.innerHTML = `
+                    <div class="task-meta">
+                        <span>📁 القسم: <b>${task.department}</b></span>
+                        <span style="color: var(--accent-color);">📅 ديدلاين الاستحقاق: <b>${task.dueDate}</b></span>
+                    </div>
                     <div class="task-title">${task.title}</div>
                     <ul class="subtasks-list">${subs}</ul>
                     <div class="timer-display" id="timer-display-${index}">00:00:00</div>
@@ -865,17 +953,16 @@
         }
 
         function removeCard(title, index) {
-            document.getElementById(`task-card-${index}`).remove();
-            let tasks = JSON.parse(localStorage.getItem('userTasks')) || [];
-            tasks = tasks.filter(t => t.title !== title);
-            localStorage.setItem('userTasks', JSON.stringify(tasks));
-            if (tasks.length === 0) renderTasks([]);
+            const cardEl = document.getElementById(`task-card-${index}`);
+            if (cardEl) cardEl.remove();
+            currentLoadedTasks = currentLoadedTasks.filter(t => t.title !== title);
+            localStorage.setItem('userTasks', JSON.stringify(currentLoadedTasks));
+            if (currentLoadedTasks.length === 0) renderTasksSorted([]);
         }
 
-        // إرسال الإشعار البريدي التلقائي لحفصة عند تسليم مهمة يدوية
         async function submitUnlistedTask() {
             const taskTitle = prompt("اكتب عنوان التاسك اليدوي الخارجي اللي أنجزته عشان نبعته لحفصة تعدله:");
-            if (!taskTitle) return;
+            if (!taskTitle || taskTitle.trim() === "") return;
 
             const userEmail = localStorage.getItem('userEmail');
             const userName = localStorage.getItem('username');
@@ -884,11 +971,15 @@
                 const response = await fetch('/api/submit-unlisted-task', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ taskTitle, userEmail, userName })
+                    body: JSON.stringify({
+                        taskTitle: taskTitle.trim(),
+                        userEmail: userEmail,
+                        userName: userName
+                    })
                 });
                 const data = await response.json();
                 alert(data.message);
-            } catch (e) { alert("مشكلة في الاتصال بالشبكة!"); }
+            } catch (e) { alert("مشكلة في الاتصال بالسيرفر حركياً!"); }
         }
 
         function handleSubtaskKeydown(e) { if (e.key === 'Enter') { e.preventDefault(); addSubtaskToPreview(); } }
@@ -900,7 +991,7 @@
             if (!title) return alert("اكتب عنوان التأسك أولاً!");
             try {
                 const response = await fetch('/api/create-custom-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, subTasks: customSubTasks, email: localStorage.getItem('userEmail') }) });
-                if (response.ok) { alert("✅ ترحيل ناجح لكليك أب!"); document.getElementById("custom-task-title").value = ""; customSubTasks = []; renderPreview(); refreshTasks(); }
+                if (response.ok) { alert("✅ ترحيل ناجح لقائمة يونيو الموحدة!"); document.getElementById("custom-task-title").value = ""; customSubTasks = []; renderPreview(); refreshTasks(); }
             } catch (err) { alert("خطأ اتصال"); }
         }
 
