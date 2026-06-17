@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة مجتمع الضاد | لوحة التحكم المتكاملة</title>
+    <title>بوابة مجتمع الضاد | لوحة تحكم المهام</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -805,7 +805,7 @@
 
     <div class="container">
         <div class="brand-logo-container">
-            <img src="/images/logo.jpg" alt="لوجو مجتمع الضاد" class="dhad-logo-img">
+            <img src="/images/logo.jpg" alt=" مجتمع الضاد" class="dhad-logo-img">
         </div>
 
         <div id="login-interface" class="auth-box">
@@ -856,7 +856,7 @@
             </div>
 
             <div id="super-admin-area" class="super-admin-interface">
-                <h3>👑 لوحة القائد (مراقبة الحكواتية والأيام الحية)</h3>
+                <h3>👑 لوحة القائد (مراقبة الحكواتية والأيام )</h3>
                 <table class="admin-table">
                     <thead>
                         <tr>
@@ -877,36 +877,37 @@
             <div class="intro-grid" id="intro-grid-area">
                 <div class="intro-card">
                     <h3>📜 عن مجتمع الضاد</h3>
-                    <p>كيان طموح يهدف إلى قيادة وتطوير المحتوى العربي الرقمي والارتقاء بجودته. نوثق الرؤى, ونصنع
-                        الأفكار، ونمكّن المبدعين من إدارة وهيكلة مشاريعهم البرمجية والفنية بأعلى معايير الجودة
-                        التنفيذية.</p>
+                    <p>نهدف في مجتمع الضاد إلى إثراء وعي القارئ العربي
+                        عبر تلك المناقشات،
+                        كما نسعى كذلك لدعم الكُتّاب العرب الذين يملكون قلمًا مميزًا
+                        ولنكون نقطة وصل بينهم وبين قرائهم للتعرف على زوايا مختلفة من تجربة القارئ والكاتب.</p>
                 </div>
                 <div class="intro-card" style="display: flex; flex-direction: column; justify-content: space-between;">
-                    <h3>👑 قيادة المجتمع</h3>
+                    <h3>مؤسسو المجتمع</h3>
                     <div class="founders-display">
                         <div class="founder-profile">
                             <img class="founder-avatar" src="/images/ammar.jpg" alt="عمار علي">
                             <div class="founder-name">عمار علي</div>
-                            <div class="founder-role">المؤسس</div>
+                            <div class="founder-role">مؤسس</div>
                         </div>
                         <div class="founder-profile">
                             <img class="founder-avatar" src="/images/ekleel.jpg" alt="إكليل">
                             <div class="founder-name">إكليل</div>
-                            <div class="founder-role">شريك مؤسس</div>
+                            <div class="founder-role">مؤسس</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="tasks-section" id="tasks-section-area">
-                <div class="section-label">⚡ تأسكات شهر يونيو (مرتبة من الأقرب للأبعد ديدلاين)</div>
+                <div class="section-label">⚡ تأسكات شهر يونيو (مرتبة من الأقرب للأبعد حسب ميعاد التسليم)</div>
 
                 <div class="filter-area" id="department-filters">
                     <button class="filter-btn active" onclick="filterByDept('الكل')">الكل</button>
                 </div>
 
                 <div id="tasks-container">
-                    <div class="no-tasks">جاري جلب خطة عمل يونيو الحية...</div>
+                    <div class="no-tasks">جاري جلب خطة عمل يونيو الحين...</div>
                 </div>
             </div>
 
@@ -932,11 +933,11 @@
                     <ul class="subtask-preview-list" id="subtask-preview-list"></ul>
                 </div>
                 <button class="btn-deploy" id="deploy-btn" onclick="deployCustomTask()">🚀 ترحيل المهمة إلى كليك أب
-                    الحية</button>
+                    الحين</button>
             </div>
 
             <div class="unlisted-section">
-                <p>ملقيتش التاسك بتاعك مضاف في القائمة الحية</p>
+                <p>ملقيتش التاسك بتاعك مضاف في القائمة الحين</p>
                 <button class="btn btn-unlisted" onclick="submitUnlistedTask()">📢 خلصت تسليم تاسك يدوي (إشعار
                     لحفصة)</button>
             </div>
@@ -1135,7 +1136,7 @@
                     <div class="task-meta">
                         <span>📁 القسم: <b>${task.department}</b></span>
                         ${adminMetaHTML}
-                        <span style="color: var(--accent-color);">📅 ديدلاين الاستحقاق: <b>${task.dueDate}</b></span>
+                        <span style="color: var(--accent-color);">📅 ديدلاين التسليم: <b>${task.dueDate}</b></span>
                     </div>
                     <div class="task-title">${task.title}</div>
                     <ul class="subtasks-list">${subs}</ul>
