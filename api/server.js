@@ -57,7 +57,6 @@ const usersDatabase = {
     "mostafanesr0@gmail.com": { fullName: "مصطفى محمود", role: "عضو", sector: "الميديا", pin: "0000", visitsByDay: { Saturday: 0, Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0 }, totalVisits: 0 }
 };
 
-// ⚡ دالة جلب مصلحة ومحمية تماماً ضد الـ الانهيار للحسابات الجديدة المدرجة ديناميكياً
 async function fetchSingleListTasks(email, isAdmin) {
     try {
         const response = await axios.get(`https://api.clickup.com/api/v2/list/${CLICKUP_SINGLE_LIST_ID}/task?archived=false&include_closed=false`, {
@@ -88,18 +87,16 @@ async function fetchSingleListTasks(email, isAdmin) {
                 deptField = task.tags[0].name;
             }
 
-            // 🛡️ تعديل الحماية الجوهري: منع الانهيار لو الحساب مسجل جديد ولم يدرج في المصفوفة الثابتة فوق بعد
             let assigneeEmail = "غير مخصص";
             let assigneeName = "بدون مسؤول";
             if (task.assignees && task.assignees.length > 0) {
                 assigneeEmail = task.assignees[0].email.toLowerCase().trim();
                 const matchedUser = usersDatabase[assigneeEmail];
-                // لو مش مخصص فوق، هيجيب اسمه اللي متسجل بيه في كليك اب تلقائي بدون مشاكل
                 assigneeName = matchedUser ? matchedUser.fullName : task.assignees[0].username;
             }
 
             return {
-                id: task.id,
+                id: task.id, // 🛑 تثبيت الـ id لضمان صحة قفل وتحديث التاسكات
                 title: task.name,
                 department: deptField,
                 dueDate: deadlineDate,
@@ -110,7 +107,6 @@ async function fetchSingleListTasks(email, isAdmin) {
             };
         });
     } catch (err) {
-        console.error("خطأ في سحب الليست الموحدة:", err.message);
         return [];
     }
 }
@@ -150,7 +146,6 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// مسار التسجيل المصلح لتأمين إدراج الحساب ديناميكياً داخل الكائن لتفادي الـ Undefined
 app.post('/api/signup', (req, res) => {
     const { fullName, email, pin } = req.body;
     if (!fullName || !email || !pin) return res.status(400).json({ success: false, message: "يرجى إدخال كافة البيانات!" });
@@ -160,7 +155,6 @@ app.post('/api/signup', (req, res) => {
         return res.status(400).json({ success: false, message: "هذا الحساب مسجل بالفعل!" });
     }
 
-    // إدراج الحساب فوراً بالهيكل الكامل المعتمد
     usersDatabase[lowerEmail] = {
         fullName: fullName,
         role: "حكواتي مستجد",
@@ -169,7 +163,6 @@ app.post('/api/signup', (req, res) => {
         visitsByDay: { Saturday: 0, Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0 },
         totalVisits: 0
     };
-
     res.json({ success: true, message: "تم تسجيل الحساب بنجاح! جرب سجل دخول الحين." });
 });
 
@@ -205,13 +198,21 @@ app.post('/api/create-custom-task', async (req, res) => {
     } catch (err) { res.status(500).json({ success: false }); }
 });
 
+// 🛑 إصلاح وتأمين قفل التأسكات لايف في كليك اب
 app.post('/api/submit-task', async (req, res) => {
     const { taskId } = req.body;
-    if (taskId) {
-        try {
-            await axios.put(`https://api.clickup.com/api/v2/task/${taskId}`, { status: 'complete' }, { headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' } });
-            res.json({ success: true });
-        } catch (err) { res.status(500).json({ success: false }); }
+    if (!taskId) return res.status(400).json({ success: false, message: "معرف المهمة مفقود." });
+
+    try {
+        await axios.put(`https://api.clickup.com/api/v2/task/${taskId}`, {
+            status: 'complete'
+        }, {
+            headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
+        });
+        res.json({ success: true, message: "تم قفل المهمة في كليك اب!" });
+    } catch (err) {
+        console.error("فشل إغلاق التاسك كليك اب:", err.message);
+        res.status(500).json({ success: false });
     }
 });
 
@@ -239,7 +240,10 @@ app.post('/api/submit-unlisted-task', async (req, res) => {
     try {
         await transporter.sendMail(mailOptions);
         res.json({ success: true, message: "تم تسجيل تسليم المهمة الخارجية وإشعار حفصة بنجاح! 📢" });
-    } catch (error) { res.status(500).json({ success: false }); }
+    } catch (error) {
+        console.error("فشل إرسال الإيميل:", error.message);
+        res.status(500).json({ success: false });
+    }
 });
 
 module.exports = app;

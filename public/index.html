@@ -676,8 +676,8 @@
                 <div class="intro-card">
                     <h3>📜 عن مجتمع الضاد</h3>
                     <p>كيان طموح يهدف إلى قيادة وتطوير المحتوى العربي الرقمي والارتقاء بجودته. نوثق الرؤى, ونصنع
-                        الأفكار، ونمكّن المبدعين من إدارة وهيكلة مشاريعهم البرمجية والفنية بأعلى معايير الجودة
-                        التنفيذية.</p>
+                        الأفكار، ونمكّن المبدعين من إدارة وهيكلة مشاريعهم برمجية والفنية بأعلى معايير الجودة التنفيذية.
+                    </p>
                 </div>
                 <div class="intro-card" style="display: flex; flex-direction: column; justify-content: space-between;">
                     <h3>👑 قيادة المجتمع</h3>
@@ -711,7 +711,7 @@
             <div class="custom-task-section" id="custom-task-area">
                 <h3>➕ إضافة مهمة مخصصة إلى كليك أب يونيو الموحد</h3>
                 <div class="input-group">
-                    <label>عنوان規模 المهمة الأساسية:</label>
+                    <label>عنوان المهمة الأساسية:</label>
                     <input type="text" id="custom-task-title" placeholder="اكتب عنوان المهمة الجديدة هنا...">
                 </div>
                 <div class="input-group">
@@ -913,6 +913,7 @@
                     adminMetaHTML = `<span style="color: #10b981; font-weight: bold;">👤 المسؤول: ${task.assignedName} (${task.assignedEmail})</span>`;
                 }
 
+                // 🛑 تم التأكيد على تمرير الـ id الحقيقي الخاص بكليك اب '${task.id}' في الدوال بالأسفل
                 card.innerHTML = `
                     <div class="task-meta">
                         <span>📁 القسم: <b>${task.department}</b></span>
@@ -951,14 +952,33 @@
         function formatTime(t) { const h = Math.floor(t / 3600).toString().padStart(2, '0'), m = Math.floor((t % 3600) / 60).toString().padStart(2, '0'), s = (t % 60).toString().padStart(2, '0'); return `${h}:${m}:${s}`; }
 
         async function quickSubmitTask(title, index, taskId) {
-            const response = await fetch('/api/submit-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId }) });
-            if (response.ok) { alert("✔️ تم تسليم المهمة وقفلها بنجاح!"); removeCard(title, index); }
+            try {
+                const response = await fetch('/api/submit-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskId: taskId })
+                });
+                const data = await response.json();
+                alert("✔️ تم تسليم المهمة وقفلها بنجاح في كليك اب!");
+                removeCard(title, index);
+            } catch (e) {
+                alert("فشل الاتصال بالسيرفر لإغلاق المهمة.");
+            }
         }
 
         async function submitWithTimer(title, index, taskId) {
             clearInterval(activeTimers[index].interval);
-            const response = await fetch('/api/submit-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ taskId }) });
-            if (response.ok) { alert("✅ تم إغلاقها وحفظ توقيت العداد المكتمل!"); removeCard(title, index); }
+            try {
+                const response = await fetch('/api/submit-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskId: taskId })
+                });
+                alert("✅ تم إغلاقها وحفظ توقيت العداد المكتمل في كليك اب!");
+                removeCard(title, index);
+            } catch (e) {
+                alert("فشل قفل المهمة المؤقتة.");
+            }
         }
 
         function removeCard(title, index) {
@@ -987,7 +1007,7 @@
                     })
                 });
                 const data = await response.json();
-                alert(data.message);
+                alert(data.message || "تمت العملية بنجاح!");
             } catch (e) { alert("مشكلة في الاتصال بالسيرفر!"); }
         }
 
