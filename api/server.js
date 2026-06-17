@@ -15,17 +15,63 @@ const CLICKUP_TOKEN = 'pk_218484746_Q1RKGUI85Y06WXWC105T3DHXHTA4WHBH';
 const HAFSA_GMAIL = 'who.is.hafsa@gmail.com';
 const CLICKUP_SINGLE_LIST_ID = '901818521616';
 
-// 💾 رابط الاتصال المباشر والمقفل من صورتك الأخيرة
+// 💾 رابط الاتصال السحابي المباشر بمونجو دي بي لمجتمع الضاد
 const MONGODB_URI = 'mongodb+srv://amar11101095770691_db_user:hGu8bhoMistK6Mk2@cluster0.e7f2cve.mongodb.net/dhad_db?retryWrites=true&w=majority';
 
-// دالة اتصال ذكية تضمن إعادة فتح القناة لو فيرسل نومها
-async function connectToMongo() {
-    if (mongoose.connection.readyState === 1) return;
+// لستة تيم الإدارة والفهرس الأساسي
+const defaultUsers = [
+    { email: "ammar.aly000@gmail.com", fullName: "عمار علي", role: "Co-Founder", sector: "مؤسسين", pin: "0000" },
+    { email: "ikleledina@gmail.com", fullName: "إكليل", role: "Co-Founder", sector: "مؤسسين", pin: "0000" },
+    { email: "somaya.hussein34@gmail.com", fullName: "سمية حسين", role: "مديرة الميديا", sector: "الإدارة", pin: "0000" },
+    { email: "gillporcha@gmail.com", fullName: "هاجر يحيى", role: "HR", sector: "الإدارة / التصنيفات", pin: "0000" },
+    { email: "who.is.hafsa@gmail.com", fullName: "حفصة", role: "مديرة تصنيفات", sector: "الإدارة", pin: "0000" },
+    { email: "k20012437@gmail.com", fullName: "هاجر سلامة", role: "مديرة تصنيفات", sector: "الإدارة", pin: "0000" },
+    { email: "asmaaashraf1052@gmail.com", fullName: "أسماء", role: "مشرف", sector: "الميديا", pin: "0000" },
+    { email: "sohilat32@gmail.com", fullName: "سهيلة", role: "مشرف", sector: "الميديا", pin: "0000" },
+    { email: "mariammohamedsan@gmail.com", fullName: "سديم", role: "مشرف", sector: "الميديا", pin: "0000" },
+    { email: "ahmedalhossam5@gmail.com", fullName: "أحمد حسام", role: "مشرف", sector: "الميديا", pin: "0000" },
+    { email: "nadine.gomaa20@gmail.com", fullName: "نادين جمعة", role: "مشرف", sector: "التصنيفات", pin: "0000" },
+    { email: "mostafaelhadidy975@gmail.com", fullName: "مصطفى الحديدي", role: "مشرف", sector: "التصنيفات", pin: "0000" },
+    { email: "shaimaaeissa68@gmail.com", fullName: "شيماء عيسى", role: "مشرف", sector: "التصنيفات", pin: "0000" },
+    { email: "mariemmohamedaly290@gmail.com", fullName: "مريم علي", role: "مشرف", sector: "التصنيفات", pin: "0000" },
+    { email: "rewaaa62@gmail.com", fullName: "رواء", role: "عضو", sector: "التصنيفات", pin: "0000" },
+    { email: "ahmed.el.jonior@gmail.com", fullName: "احمد ابراهيم", role: "عضو", sector: "التصنيفات", pin: "0000" },
+    { email: "yousef.nezar39@gmail.com", fullName: "يوسف نزار", role: "عضو", sector: "الميديا", pin: "0000" },
+    { email: "ahmedhegazzy15@gmail.com", fullName: "احمد حجازي", role: "عضو", sector: "الميديا", pin: "0000" },
+    { email: "malak.t.a.ezzat@gmail.com", fullName: "ملك عزت", role: "عضو", sector: "الميديا", pin: "0000" },
+    { email: "mostafanesr0@gmail.com", fullName: "مصطفى محمود", role: "عضو", sector: "الميديا", pin: "0000" }
+];
+
+// دالة الاتصال والتأكد من وجود مستخدمي الإدارة فوراً
+async function connectToMongoAndSeed() {
+    if (mongoose.connection.readyState !== 1) {
+        try {
+            await mongoose.connect(MONGODB_URI);
+            console.log("تم الاتصال السحابي بمونجو بنجاح 💾");
+        } catch (e) {
+            console.error("خطأ اتصال مونجو:", e.message);
+            return;
+        }
+    }
+
+    // تكتيك الحرق التلقائي: لو الأدمينز مش في الداتا بيز السحابية نزلهم فوراً
     try {
-        await mongoose.connect(MONGODB_URI);
-        console.log("تم الاتصال السحابي بنجاح 💾");
-    } catch (e) {
-        console.error("خطأ اتصال مونجو:", e.message);
+        const count = await User.countDocuments();
+        if (count < defaultUsers.length) {
+            for (let u of defaultUsers) {
+                const exists = await User.findOne({ email: u.email.toLowerCase().trim() });
+                if (!exists) {
+                    await User.create({
+                        ...u,
+                        visitsByDay: { Saturday: 0, Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0 },
+                        totalVisits: 0
+                    });
+                }
+            }
+            console.log("تم فحص وتأمين وجود حسابات الإدارة بنجاح!");
+        }
+    } catch (err) {
+        console.log("تنبيه في فحص الأدمينز:", err.message);
     }
 }
 
@@ -66,7 +112,6 @@ async function fetchSingleListTasks(email, isAdmin) {
             headers: { 'Authorization': CLICKUP_TOKEN }
         });
         const tasks = response.data.tasks || [];
-        await connectToMongo(); // تأمين الاتصال
         return await Promise.all(tasks.filter(task => {
             if (isAdmin) return true;
             const isAssigned = task.assignees && task.assignees.some(a => a.email.toLowerCase() === email);
@@ -100,15 +145,18 @@ async function fetchSingleListTasks(email, isAdmin) {
     } catch (err) { return []; }
 }
 
+// 🔐 مسار تسجيل الدخول المحدث
 app.post('/api/login', async (req, res) => {
     const { email, pin } = req.body;
-    if (!email || !pin) return res.status(400).json({ success: false });
+    if (!email || !pin) return res.status(400).json({ success: false, message: "بيانات ناقصة" });
     const lowerEmail = email.toLowerCase().trim();
     const isMasterAdmin = (lowerEmail === MY_GMAIL && pin === SUPER_PIN);
     try {
-        await connectToMongo();
+        await connectToMongoAndSeed(); // اتصال وفحص أوتوماتيكي فوري لقاعدة البيانات
         let currentUser = await User.findOne({ email: lowerEmail });
-        if (!currentUser || currentUser.pin !== pin) return res.status(401).json({ success: false });
+        if (!currentUser || currentUser.pin !== pin) {
+            return res.status(401).json({ success: false, message: "البريد أو الـ PIN غير صحيح" });
+        }
         const currentDay = getCurrentDayName();
         currentUser.visitsByDay[currentDay] = (currentUser.visitsByDay[currentDay] || 0) + 1;
         currentUser.totalVisits = Object.values(currentUser.visitsByDay.toObject()).reduce((a, b) => a + b, 0);
@@ -124,13 +172,13 @@ app.post('/api/login', async (req, res) => {
     } catch (error) { res.status(500).json({ success: false }); }
 });
 
-// 🚀 مسار الـ Signup المقفل والمحمي لإجبار فتح الاتصال الفوري بمونجو
+// 🚀 مسار تسجيل الحسابات الجديدة
 app.post('/api/signup', async (req, res) => {
     const { fullName, email, pin } = req.body;
     if (!fullName || !email || !pin) return res.status(400).json({ success: false, message: "بيانات ناقصة" });
     const lowerEmail = email.toLowerCase().trim();
     try {
-        await connectToMongo(); // 🛑 إجبار السيرفر على فتح القناة لايف مع مونجو في نفس اللحظة
+        await connectToMongoAndSeed();
         const exists = await User.findOne({ email: lowerEmail });
         if (exists) return res.status(400).json({ success: false, message: "مسجل بالفعل" });
 
@@ -139,16 +187,15 @@ app.post('/api/signup', async (req, res) => {
             visitsByDay: { Saturday: 0, Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0 },
             totalVisits: 0
         });
-        res.json({ success: true, message: "تم تسجيل حسابك المستجد بنجاح! جرب سجل دخول الحين." });
+        res.json({ success: true, message: "تم تسجيل حسابك المستجد بنجاح!" });
     } catch (err) {
-        console.error("خطأ الساين اب:", err.message);
         res.status(500).json({ success: false, message: "فشل حفظ الحساب السحابي." });
     }
 });
 
 app.get('/api/admin/users', async (req, res) => {
     try {
-        await connectToMongo();
+        await connectToMongoAndSeed();
         const usersList = await User.find({});
         res.json({ success: true, users: usersList });
     } catch (e) { res.status(500).json({ success: false }); }
