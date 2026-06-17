@@ -15,7 +15,7 @@ const CLICKUP_TOKEN = 'pk_218484746_Q1RKGUI85Y06WXWC105T3DHXHTA4WHBH';
 const HAFSA_GMAIL = 'who.is.hafsa@gmail.com';
 const CLICKUP_SINGLE_LIST_ID = '901818521616';
 
-// 💾 رابط اتصال قاعدة بيانات مونجو دي بي السحابية الخاصة بك مع دمج الداتا
+// 💾 رابط اتصال قاعدة بيانات مونجو دي بي السحابية الخاصة بك
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://amar11101095770691_db_user:hGu8bhoMistK6Mk2@cluster0.e7f2cve.mongodb.net/dhad_db?retryWrites=true&w=majority&appName=Cluster0';
 
 // الاتصال بـ MongoDB
@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// تكتيك الـ Seed: إدراج تيم الفهرس تلقائيًا في المونجو أول مرة لكي لا تحتاج لإدخالهم يدويًا
+// تكتيك الـ Seed: إدراج تيم الفهرس تلقائيًا في المونجو أول مرة
 async function seedInitialUsers() {
     const defaultUsers = [
         { email: "ammar.aly000@gmail.com", fullName: "عمار علي", role: "Co-Founder", sector: "مؤسسين", pin: "0000" },
@@ -80,7 +80,6 @@ async function seedInitialUsers() {
 }
 mongoose.connection.once('open', () => { seedInitialUsers(); });
 
-// إعداد Nodemailer لإشعار حفصة بريديًا
 const transporter = nodemailer.createTransport({
     service: 'gmail', host: 'smtp.gmail.com', port: 465, secure: true,
     auth: { user: MY_GMAIL, pass: 'qurkgui85y06wxwc' }
@@ -91,7 +90,6 @@ function getCurrentDayName() {
     return days[new Date().getDay()];
 }
 
-// دالة جلب التأسكات الحية وقراءة بيانات المسؤول بمرونة
 async function fetchSingleListTasks(email, isAdmin) {
     try {
         const response = await axios.get(`https://api.clickup.com/api/v2/list/${CLICKUP_SINGLE_LIST_ID}/task?archived=false&include_closed=false`, {
@@ -105,7 +103,7 @@ async function fetchSingleListTasks(email, isAdmin) {
             const isCreatedByHim = task.description && task.description.includes(email);
             return isAssigned || isCreatedByHim;
         }).map(async (task) => {
-            let deadlineDate = "غير حدد";
+            let deadlineDate = "غير محدد";
             if (task.due_date) deadlineDate = new Date(parseInt(task.due_date)).toLocaleDateString('ar-EG');
 
             let deptField = "عام";
@@ -137,7 +135,6 @@ async function fetchSingleListTasks(email, isAdmin) {
     } catch (err) { return []; }
 }
 
-// 🔓 تسجيل الدخول وتحديث عداد الأيام التفاعلي داخل المونجو دي بي
 app.post('/api/login', async (req, res) => {
     const { email, pin } = req.body;
     if (!email || !pin) return res.status(400).json({ success: false, message: "بيانات ناقصة!" });
@@ -168,7 +165,7 @@ app.post('/api/login', async (req, res) => {
     } catch (error) { res.status(500).json({ success: false }); }
 });
 
-// 📝 إنشاء حساب جديد آمن وحفظه في مونجو دي بي السحابية
+// 🛠️ التعديل الجذري: قفلنا الحقول الناقصة بالكامل لضمان تفعيل الحسابات الجديدة السحابية فوراً
 app.post('/api/signup', async (req, res) => {
     const { fullName, email, pin } = req.body;
     if (!fullName || !email || !pin) return res.status(400).json({ success: false, message: "يرجى إدخال كافة البيانات!" });
@@ -178,15 +175,24 @@ app.post('/api/signup', async (req, res) => {
         const exists = await User.findOne({ email: lowerEmail });
         if (exists) return res.status(400).json({ success: false, message: "هذا الحساب مسجل بالفعل!" });
 
+        // تمرير هيكل الأوبجكت بالكامل وبكل الحقول المطلوبة لـ MongoDB
         await User.create({
-            email: lowerEmail, fullName, pin,
-            visitsByDay: { Saturday: 0, Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0 }
+            email: lowerEmail,
+            fullName: fullName,
+            pin: pin,
+            role: "حكواتي مستجد",
+            sector: "عام",
+            visitsByDay: { Saturday: 0, Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0 },
+            totalVisits: 0
         });
+
         res.json({ success: true, message: "تم تسجيل حسابك المستجد بنجاح في السحاب! جرب سجل دخول الحين." });
-    } catch (err) { res.status(500).json({ success: false }); }
+    } catch (err) {
+        console.error("عطل الـ Signup بمونجو:", err.message);
+        res.status(500).json({ success: false, message: "فشل حفظ الحساب السحابي." });
+    }
 });
 
-// 📊 جلب التيم من مونجو دي بي لايف لإحصائيات الإدارة
 app.get('/api/admin/users', async (req, res) => {
     try {
         const usersList = await User.find({});
@@ -207,7 +213,6 @@ app.post('/api/create-custom-task', async (req, res) => {
 
         const createdTask = response.data;
 
-        // Auto Assign التلقائي للشخص نفسه لتصبح رسمية وليست مجرد فكرة
         try {
             const listUsersResponse = await axios.get(`https://api.clickup.com/api/v2/list/${CLICKUP_SINGLE_LIST_ID}/member`, { headers: { 'Authorization': CLICKUP_TOKEN } });
             const clickUpUsers = listUsersResponse.data.members || [];
