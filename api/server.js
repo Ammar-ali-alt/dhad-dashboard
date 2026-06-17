@@ -13,10 +13,10 @@ const SUPER_PIN = '0000';
 const CLICKUP_TOKEN = 'pk_218484746_Q1RKGUI85Y06WXWC105T3DHXHTA4WHBH';
 const HAFSA_GMAIL = 'who.is.hafsa@gmail.com';
 
-// 📋 معرف قائمة يونيو الموحدة الجديدة التي أرسلتها الحين
+// 📋 معرف قائمة يونيو الموحدة 
 const CLICKUP_SINGLE_LIST_ID = '901818521616';
 
-// إعداد وسيلة إرسال الإيميلات التلقائية المصلحة والموثقة عبر الـ App Password المسترجع
+// إعداد وسيلة إرسال الإيميلات التلقائية عبر الـ App Password المعتمد
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     host: 'smtp.gmail.com',
@@ -24,17 +24,16 @@ const transporter = nodemailer.createTransport({
     secure: true,
     auth: {
         user: MY_GMAIL,
-        pass: 'qurkgui85y06wxwc' // الـ 16 حرفًا المعتمدة الخاصة بك دون مسافات
+        pass: 'qurkgui85y06wxwc'
     }
 });
 
-// دالة مساعدة للحصول على اسم اليوم الحالي بالإنجليزية لمطابقة العداد
 function getCurrentDayName() {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     return days[new Date().getDay()];
 }
 
-// 📋 قاعدة البيانات الشاملة لجميع الحكواتية والإدارة بناءً على ملف الفهرس المرفق
+// 📋 قاعدة البيانات الشاملة لجميع الحكواتية والإدارة بناءً على ملف الفهرس
 const usersDatabase = {
     "ammar.aly000@gmail.com": { fullName: "عمار علي", role: "Co-Founder", sector: "مؤسسين", pin: "0000", visitsByDay: { Saturday: 0, Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0 }, totalVisits: 0 },
     "ikleledina@gmail.com": { fullName: "إكليل", role: "Co-Founder", sector: "مؤسسين", pin: "0000", visitsByDay: { Saturday: 0, Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0 }, totalVisits: 0 },
@@ -58,7 +57,7 @@ const usersDatabase = {
     "mostafanesr0@gmail.com": { fullName: "مصطفى محمود", role: "عضو", sector: "الميديا", pin: "0000", visitsByDay: { Saturday: 0, Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0 }, totalVisits: 0 }
 };
 
-// ⚡ دالة جلب خاطفة ومحسنة من قائمة يونيو الموحدة مع قراءة الديدلاين والقسم المخصص
+// ⚡ دالة جلب مصلحة ومحمية تماماً ضد الـ الانهيار للحسابات الجديدة المدرجة ديناميكياً
 async function fetchSingleListTasks(email, isAdmin) {
     try {
         const response = await axios.get(`https://api.clickup.com/api/v2/list/${CLICKUP_SINGLE_LIST_ID}/task?archived=false&include_closed=false`, {
@@ -68,7 +67,7 @@ async function fetchSingleListTasks(email, isAdmin) {
         const tasks = response.data.tasks || [];
 
         return tasks.filter(task => {
-            if (isAdmin) return true; // القائد يرى جميع مهام القائمة للرقابة الشاملة
+            if (isAdmin) return true;
             const isAssigned = task.assignees && task.assignees.some(a => a.email.toLowerCase() === email);
             const isCreatedByHim = task.description && task.description.includes(email);
             return isAssigned || isCreatedByHim;
@@ -78,16 +77,25 @@ async function fetchSingleListTasks(email, isAdmin) {
                 deadlineDate = new Date(parseInt(task.due_date)).toLocaleDateString('ar-EG');
             }
 
-            // قراءة الأقسام ديناميكيًا من الحقول المخصصة أو الـ Tags كبديل مرن
             let deptField = "عام";
-            if (task.custom_fields) {
-                const foundDept = task.custom_fields.find(f => f.name.includes("القسم") || f.name.includes("Department"));
+            if (task.custom_fields && Array.isArray(task.custom_fields)) {
+                const foundDept = task.custom_fields.find(f => f.name && (f.name.includes("القسم") || f.name.includes("Department")));
                 if (foundDept && foundDept.value !== undefined && foundDept.type_config && foundDept.type_config.options) {
                     const opt = foundDept.type_config.options[foundDept.value];
-                    if (opt) deptField = opt.name;
+                    if (opt && opt.name) deptField = opt.name;
                 }
             } else if (task.tags && task.tags.length > 0) {
                 deptField = task.tags[0].name;
+            }
+
+            // 🛡️ تعديل الحماية الجوهري: منع الانهيار لو الحساب مسجل جديد ولم يدرج في المصفوفة الثابتة فوق بعد
+            let assigneeEmail = "غير مخصص";
+            let assigneeName = "بدون مسؤول";
+            if (task.assignees && task.assignees.length > 0) {
+                assigneeEmail = task.assignees[0].email.toLowerCase().trim();
+                const matchedUser = usersDatabase[assigneeEmail];
+                // لو مش مخصص فوق، هيجيب اسمه اللي متسجل بيه في كليك اب تلقائي بدون مشاكل
+                assigneeName = matchedUser ? matchedUser.fullName : task.assignees[0].username;
             }
 
             return {
@@ -95,12 +103,14 @@ async function fetchSingleListTasks(email, isAdmin) {
                 title: task.name,
                 department: deptField,
                 dueDate: deadlineDate,
-                dueDateRaw: task.due_date ? parseInt(task.due_date) : 0, // أصل التاريخ لتسهيل عملية الترتيب الزمني
+                dueDateRaw: task.due_date ? parseInt(task.due_date) : 0,
+                assignedEmail: assigneeEmail,
+                assignedName: assigneeName,
                 subTasks: task.checklists && task.checklists[0] ? task.checklists[0].items.map(item => item.name) : ["تحضير المادة العلمية", "التنفيذ والمراجعة الفنية"]
             };
         });
     } catch (err) {
-        console.error("خطأ في سحب الليست الموحدة لشهر يونيو:", err.message);
+        console.error("خطأ في سحب الليست الموحدة:", err.message);
         return [];
     }
 }
@@ -117,7 +127,6 @@ app.post('/api/login', async (req, res) => {
         return res.status(401).json({ success: false, message: "البريد أو الـ PIN غير صحيح!" });
     }
 
-    // تحديث وتفصيل العدادات لأيام الأسبوع بدقة وحساب الإجمالي المجمع
     currentUser.visitsByDay[getCurrentDayName()] = (currentUser.visitsByDay[getCurrentDayName()] || 0) + 1;
     currentUser.totalVisits = Object.values(currentUser.visitsByDay).reduce((a, b) => a + b, 0);
 
@@ -139,6 +148,29 @@ app.post('/api/login', async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false });
     }
+});
+
+// مسار التسجيل المصلح لتأمين إدراج الحساب ديناميكياً داخل الكائن لتفادي الـ Undefined
+app.post('/api/signup', (req, res) => {
+    const { fullName, email, pin } = req.body;
+    if (!fullName || !email || !pin) return res.status(400).json({ success: false, message: "يرجى إدخال كافة البيانات!" });
+
+    const lowerEmail = email.toLowerCase().trim();
+    if (usersDatabase[lowerEmail]) {
+        return res.status(400).json({ success: false, message: "هذا الحساب مسجل بالفعل!" });
+    }
+
+    // إدراج الحساب فوراً بالهيكل الكامل المعتمد
+    usersDatabase[lowerEmail] = {
+        fullName: fullName,
+        role: "حكواتي مستجد",
+        sector: "عام",
+        pin: pin,
+        visitsByDay: { Saturday: 0, Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0 },
+        totalVisits: 0
+    };
+
+    res.json({ success: true, message: "تم تسجيل الحساب بنجاح! جرب سجل دخول الحين." });
 });
 
 app.get('/api/admin/users', (req, res) => {
@@ -183,13 +215,9 @@ app.post('/api/submit-task', async (req, res) => {
     }
 });
 
-// 📢 مسار تسليم المهام اليدوية وإرسال الإيميل الفوري المنسق إلى حفصة
 app.post('/api/submit-unlisted-task', async (req, res) => {
     const { taskTitle, userEmail, userName } = req.body;
-
-    if (!taskTitle || !userEmail) {
-        return res.status(400).json({ success: false, message: "بيانات الإرسال غير مكتملة." });
-    }
+    if (!taskTitle || !userEmail) return res.status(400).json({ success: false });
 
     const mailOptions = {
         from: `"بوابة مجتمع الضاد الذكية" <${MY_GMAIL}>`,
@@ -199,23 +227,19 @@ app.post('/api/submit-unlisted-task', async (req, res) => {
             <div dir="rtl" style="font-family: 'Cairo', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f59e0b; border-radius: 12px; background-color: #060606; color: #e8e8e8;">
                 <h2 style="color: #f59e0b; text-align: center; border-bottom: 2px solid #f59e0b; padding-bottom: 10px;">بوابة مجتمع الضاد الذكية</h2>
                 <p style="font-size: 16px; color: #ffffff;">مرحباً يا <b>حفصة</b>،</p>
-                <p style="font-size: 14px; color: #a0a0a0;">لقد قام أحد المسؤولين بتسليم مهمة يدوية خارجية (غير مدرجة في اللائحة الحية)، يرجى مراجعتها وتعديلها داخل كليك أب:</p>
+                <p style="font-size: 14px; color: #a0a0a0;">لقد قام أحد المسؤولين بتسليم مهمة يدوية خارجية، يرجى مراجعتها وتعديلها داخل كليك أب:</p>
                 <div style="background: #0d0d0d; border-right: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 6px; border: 1px solid rgba(245,158,11,0.1);">
                     <p style="margin: 5px 0; font-size: 14px;"><b>📌 عنوان المهمة:</b> <span style="color:#fff;">${taskTitle}</span></p>
                     <p style="margin: 5px 0; font-size: 14px;"><b>👤 المسؤول التنفيذي:</b> <span style="color:#f59e0b;">${userName || 'غير محدد'}</span> (${userEmail})</p>
                     <p style="margin: 5px 0; font-size: 14px;"><b>⏰ توقيت التسليم الحركي:</b> ${new Date().toLocaleString('ar-EG')}</p>
                 </div>
-                <p style="font-size: 11px; color: #777; text-align: center; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">تم توليد هذا الإشعار الإداري التلقائي بواسطة نظام اللوحة للرقابة الحية.</p>
             </div>`
     };
 
     try {
         await transporter.sendMail(mailOptions);
         res.json({ success: true, message: "تم تسجيل تسليم المهمة الخارجية وإشعار حفصة بنجاح! 📢" });
-    } catch (error) {
-        console.error("تفاصيل فشل الإرسال بالخلفية:", error.message);
-        res.status(500).json({ success: false, message: "تم تسجيل التاسك، لكن السيرفر واجه مشكلة في دفع الإشعار البريدي لحفصة." });
-    }
+    } catch (error) { res.status(500).json({ success: false }); }
 });
 
 module.exports = app;

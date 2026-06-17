@@ -377,6 +377,8 @@
             margin-bottom: 12px;
             border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
             padding-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .task-title {
@@ -709,7 +711,7 @@
             <div class="custom-task-section" id="custom-task-area">
                 <h3>➕ إضافة مهمة مخصصة إلى كليك أب يونيو الموحد</h3>
                 <div class="input-group">
-                    <label>عنوان المهمة الأساسية:</label>
+                    <label>عنوان規模 المهمة الأساسية:</label>
                     <input type="text" id="custom-task-title" placeholder="اكتب عنوان المهمة الجديدة هنا...">
                 </div>
                 <div class="input-group">
@@ -726,7 +728,7 @@
             </div>
 
             <div class="unlisted-section">
-                <p>ملقيتش التاسك بتاعك مضاف في القائمة الحية؟</p>
+                <p>ملقيتش التاسك بتاعك مضاف في القائمة الحية</p>
                 <button class="btn btn-unlisted" onclick="submitUnlistedTask()">📢 خلصت تسليم تاسك يدوي (إشعار
                     لحفصة)</button>
             </div>
@@ -887,7 +889,6 @@
                 filteredTasks = tasks.filter(t => t.department === activeSelectedDept);
             }
 
-            // ترتيب زمني لايف: الأقرب فالأقرب استحقاقاً للديدلاين
             filteredTasks.sort((a, b) => {
                 if (a.dueDateRaw === 0) return 1;
                 if (b.dueDateRaw === 0) return -1;
@@ -899,15 +900,23 @@
                 return;
             }
 
+            const isAdminMode = localStorage.getItem('isAdmin') === 'true';
+
             filteredTasks.forEach((task, index) => {
                 const card = document.createElement("div");
                 card.className = "task-card"; card.id = `task-card-${index}`;
                 let subs = "";
                 task.subTasks.forEach(s => { subs += `<li><input type="checkbox"><span>${s}</span></li>`; });
 
+                let adminMetaHTML = "";
+                if (isAdminMode) {
+                    adminMetaHTML = `<span style="color: #10b981; font-weight: bold;">👤 المسؤول: ${task.assignedName} (${task.assignedEmail})</span>`;
+                }
+
                 card.innerHTML = `
                     <div class="task-meta">
                         <span>📁 القسم: <b>${task.department}</b></span>
+                        ${adminMetaHTML}
                         <span style="color: var(--accent-color);">📅 ديدلاين الاستحقاق: <b>${task.dueDate}</b></span>
                     </div>
                     <div class="task-title">${task.title}</div>
@@ -979,7 +988,7 @@
                 });
                 const data = await response.json();
                 alert(data.message);
-            } catch (e) { alert("مشكلة في الاتصال بالسيرفر حركياً!"); }
+            } catch (e) { alert("مشكلة في الاتصال بالسيرفر!"); }
         }
 
         function handleSubtaskKeydown(e) { if (e.key === 'Enter') { e.preventDefault(); addSubtaskToPreview(); } }
