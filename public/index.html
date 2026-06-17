@@ -148,6 +148,14 @@
             box-shadow: 0 0 0 4px var(--accent-glow);
         }
 
+        /* استايل منتقي نوتة النتيجة السيربربانك */
+        .input-group input[type="date"] {
+            text-align: right;
+            font-family: inherit;
+            color-scheme: dark;
+            cursor: pointer;
+        }
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -440,6 +448,53 @@
             }
         }
 
+        .global-floating-timer {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 90px;
+            height: 90px;
+            background: #0d0d0d;
+            border: 3px solid var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--accent-glow), 0 10px 30px rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            animation: breatheCircle 3s ease-in-out infinite;
+            transition: var(--transition);
+        }
+
+        .global-timer-time {
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .global-timer-label {
+            font-size: 9px;
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        @keyframes breatheCircle {
+
+            0%,
+            100% {
+                box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(245, 158, 11, 0.7);
+            }
+        }
+
         .actions-area {
             display: flex;
             gap: 12px;
@@ -601,6 +656,11 @@
 <body>
     <canvas id="ambient-canvas"></canvas>
 
+    <div id="global-floating-circle" class="global-floating-timer" onclick="focusOnActiveTaskCard()">
+        <div class="global-circle-time" id="global-circle-time">00:00:00</div>
+        <div class="global-timer-label">⏰ جاري العد..</div>
+    </div>
+
     <div class="container">
         <div class="brand-logo-container">
             <img src="/images/logo.jpg" alt="لوجو مجتمع الضاد" class="dhad-logo-img">
@@ -676,8 +736,8 @@
                 <div class="intro-card">
                     <h3>📜 عن مجتمع الضاد</h3>
                     <p>كيان طموح يهدف إلى قيادة وتطوير المحتوى العربي الرقمي والارتقاء بجودته. نوثق الرؤى, ونصنع
-                        الأفكار، ونمكّن المبدعين من إدارة وهيكلة مشاريعهم برمجية والفنية بأعلى معايير الجودة التنفيذية.
-                    </p>
+                        الأفكار، ونمكّن المبدعين من إدارة وهيكلة مشاريعهم البرمجية والفنية بأعلى معايير الجودة
+                        التنفيذية.</p>
                 </div>
                 <div class="intro-card" style="display: flex; flex-direction: column; justify-content: space-between;">
                     <h3>👑 قيادة المجتمع</h3>
@@ -714,6 +774,12 @@
                     <label>عنوان المهمة الأساسية:</label>
                     <input type="text" id="custom-task-title" placeholder="اكتب عنوان المهمة الجديدة هنا...">
                 </div>
+
+                <div class="input-group">
+                    <label>تاريخ الاستحقاق والجدولة (Deadline):</label>
+                    <input type="date" id="custom-task-date">
+                </div>
+
                 <div class="input-group">
                     <label>أضف خطوات فرعية:</label>
                     <div class="subtask-adder">
@@ -748,6 +814,7 @@
         let customSubTasks = [];
         let currentLoadedTasks = [];
         let activeSelectedDept = "الكل";
+        let globalInterval = null;
 
         const canvas = document.getElementById('ambient-canvas');
         const ctx = canvas.getContext('2d');
@@ -769,7 +836,10 @@
         animate();
 
         document.addEventListener("DOMContentLoaded", () => {
-            if (localStorage.getItem('isLoggedIn') === 'true') { showDashboard(); }
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                showDashboard();
+                checkAndRestorePersistentTimer();
+            }
         });
 
         function switchToSignup() { document.getElementById("login-interface").style.display = "none"; document.getElementById("signup-interface").style.display = "block"; }
@@ -901,10 +971,13 @@
             }
 
             const isAdminMode = localStorage.getItem('isAdmin') === 'true';
+            const savedTaskId = localStorage.getItem('runningTaskId');
+            const savedSeconds = parseInt(localStorage.getItem('runningSeconds')) || 0;
 
             filteredTasks.forEach((task, index) => {
                 const card = document.createElement("div");
                 card.className = "task-card"; card.id = `task-card-${index}`;
+                card.setAttribute('data-task-id', task.id);
                 let subs = "";
                 task.subTasks.forEach(s => { subs += `<li><input type="checkbox"><span>${s}</span></li>`; });
 
@@ -913,7 +986,9 @@
                     adminMetaHTML = `<span style="color: #10b981; font-weight: bold;">👤 المسؤول: ${task.assignedName} (${task.assignedEmail})</span>`;
                 }
 
-                // 🛑 تم التأكيد على تمرير الـ id الحقيقي الخاص بكليك اب '${task.id}' في الدوال بالأسفل
+                const isThisRunning = (savedTaskId === task.id);
+                const initSeconds = isThisRunning ? savedSeconds : 0;
+
                 card.innerHTML = `
                     <div class="task-meta">
                         <span>📁 القسم: <b>${task.department}</b></span>
@@ -922,31 +997,100 @@
                     </div>
                     <div class="task-title">${task.title}</div>
                     <ul class="subtasks-list">${subs}</ul>
-                    <div class="timer-display" id="timer-display-${index}">00:00:00</div>
+                    <div class="timer-display ${isThisRunning ? 'running' : ''}" id="timer-display-${index}">${formatTime(initSeconds)}</div>
                     <div class="actions-area">
-                        <button class="btn btn-start" id="btn-toggle-${index}" onclick="toggleTimer(${index})">⏱️ ابدأ العد</button>
-                        <button class="btn btn-submit-timer" id="btn-submit-timer-${index}" onclick="submitWithTimer('${task.title}', ${index}, '${task.id}')" style="display: none;">✅ إنهاء وتسليم بالوقت</button>
+                        <button class="btn ${isThisRunning ? 'btn-pause' : 'btn-start'}" id="btn-toggle-${index}" onclick="toggleTimer(${index}, '${task.id}')">
+                            ${isThisRunning ? '⏸️ إيقاف مؤقت' : '⏱️ ابدأ العد'}
+                        </button>
+                        <button class="btn btn-submit-timer" id="btn-submit-timer-${index}" onclick="submitWithTimer('${task.title}', ${index}, '${task.id}')" style="display: ${isThisRunning ? 'inline-block' : 'none'};">✅ إنهاء وتسليم بالوقت</button>
                         <button class="btn btn-quick" onclick="quickSubmitTask('${task.title}', ${index}, '${task.id}')">✔️ تسليم سريع</button>
                     </div>`;
                 container.appendChild(card);
-                activeTimers[index] = { seconds: 0, interval: null, running: false };
+
+                activeTimers[index] = {
+                    seconds: initSeconds,
+                    running: isThisRunning,
+                    taskId: task.id
+                };
             });
         }
 
-        function toggleTimer(index) {
+        function toggleTimer(index, taskId) {
             const timer = activeTimers[index];
             const btn = document.getElementById(`btn-toggle-${index}`);
             const sBtn = document.getElementById(`btn-submit-timer-${index}`);
             const display = document.getElementById(`timer-display-${index}`);
+            const floatingCircle = document.getElementById("global-floating-circle");
 
             if (!timer.running) {
-                timer.running = true; btn.innerText = "⏸️ إيقاف مؤقت"; btn.className = "btn btn-pause";
+                for (let i in activeTimers) {
+                    if (activeTimers[i].running && i != index) toggleTimer(i, activeTimers[i].taskId);
+                }
+
+                timer.running = true;
+                btn.innerText = "⏸️ إيقاف مؤقت"; btn.className = "btn btn-pause";
                 sBtn.style.display = "inline-block"; display.classList.add("running");
-                timer.interval = setInterval(() => { timer.seconds++; display.innerText = formatTime(timer.seconds); }, 1000);
+                floatingCircle.style.display = "flex";
+
+                localStorage.setItem('runningTaskId', taskId);
+
+                globalInterval = setInterval(() => {
+                    timer.seconds++;
+                    const timeStr = formatTime(timer.seconds);
+                    display.innerText = timeStr;
+                    document.getElementById("global-circle-time").innerText = timeStr;
+                    localStorage.setItem('runningSeconds', timer.seconds);
+                }, 1000);
             } else {
-                timer.running = false; btn.innerText = "⏱️ استئناف العد"; btn.className = "btn btn-start";
-                display.classList.remove("running"); clearInterval(timer.interval);
+                timer.running = false;
+                btn.innerText = "⏱️ ابدأ العد"; btn.className = "btn btn-start";
+                display.classList.remove("running");
+                floatingCircle.style.display = "none";
+                clearInterval(globalInterval);
+                localStorage.removeItem('runningTaskId');
+                localStorage.removeItem('runningSeconds');
             }
+        }
+
+        function checkAndRestorePersistentTimer() {
+            const savedTaskId = localStorage.getItem('runningTaskId');
+            const savedSeconds = parseInt(localStorage.getItem('runningSeconds')) || 0;
+            const floatingCircle = document.getElementById("global-floating-circle");
+
+            if (savedTaskId) {
+                floatingCircle.style.display = "flex";
+                document.getElementById("global-circle-time").innerText = formatTime(savedSeconds);
+
+                globalInterval = setInterval(() => {
+                    let currentSecs = parseInt(localStorage.getItem('runningSeconds')) || savedSeconds;
+                    currentSecs++;
+                    localStorage.setItem('runningSeconds', currentSecs);
+                    const timeStr = formatTime(currentSecs);
+                    document.getElementById("global-circle-time").innerText = timeStr;
+
+                    for (let index in activeTimers) {
+                        if (activeTimers[index].taskId === savedTaskId) {
+                            activeTimers[index].seconds = currentSecs;
+                            activeTimers[index].running = true;
+                            const disp = document.getElementById(`timer-display-${index}`);
+                            if (disp) disp.innerText = timeStr;
+                        }
+                    }
+                }, 1000);
+            }
+        }
+
+        function focusOnActiveTaskCard() {
+            const savedTaskId = localStorage.getItem('runningTaskId');
+            if (!savedTaskId) return;
+            const cards = document.querySelectorAll('.task-card');
+            cards.forEach(c => {
+                if (c.getAttribute('data-task-id') === savedTaskId) {
+                    c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    c.style.borderColor = "var(--accent-color)";
+                    setTimeout(() => c.style.borderColor = "var(--glass-border)", 2000);
+                }
+            });
         }
 
         function formatTime(t) { const h = Math.floor(t / 3600).toString().padStart(2, '0'), m = Math.floor((t % 3600) / 60).toString().padStart(2, '0'), s = (t % 60).toString().padStart(2, '0'); return `${h}:${m}:${s}`; }
@@ -958,15 +1102,18 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ taskId: taskId })
                 });
-                const data = await response.json();
+                if (localStorage.getItem('runningTaskId') === taskId) {
+                    localStorage.removeItem('runningTaskId'); localStorage.removeItem('runningSeconds');
+                    document.getElementById("global-floating-circle").style.display = "none";
+                    clearInterval(globalInterval);
+                }
                 alert("✔️ تم تسليم المهمة وقفلها بنجاح في كليك اب!");
                 removeCard(title, index);
-            } catch (e) {
-                alert("فشل الاتصال بالسيرفر لإغلاق المهمة.");
-            }
+            } catch (e) { alert("فشل الاتصال بالسيرفر لإغلاق المهمة."); }
         }
 
         async function submitWithTimer(title, index, taskId) {
+            clearInterval(globalInterval);
             clearInterval(activeTimers[index].interval);
             try {
                 const response = await fetch('/api/submit-task', {
@@ -974,11 +1121,11 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ taskId: taskId })
                 });
+                localStorage.removeItem('runningTaskId'); localStorage.removeItem('runningSeconds');
+                document.getElementById("global-floating-circle").style.display = "none";
                 alert("✅ تم إغلاقها وحفظ توقيت العداد المكتمل في كليك اب!");
                 removeCard(title, index);
-            } catch (e) {
-                alert("فشل قفل المهمة المؤقتة.");
-            }
+            } catch (e) { alert("فشل قفل المهمة المؤقتة."); }
         }
 
         function removeCard(title, index) {
@@ -1017,10 +1164,30 @@
 
         async function deployCustomTask() {
             const title = document.getElementById("custom-task-title").value.trim();
+            const dueDate = document.getElementById("custom-task-date").value; // 📅 سحب داتا النتيجة المنتخبة
+
             if (!title) return alert("اكتب عنوان التأسك أولاً!");
+            if (!dueDate) return alert("برجاء اختيار تاريخ الجدولة والكالندر للتأسك!");
+
             try {
-                const response = await fetch('/api/create-custom-task', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, subTasks: customSubTasks, email: localStorage.getItem('userEmail') }) });
-                if (response.ok) { alert("✅ ترحيل ناجح لقائمة يونيو الموحدة!"); document.getElementById("custom-task-title").value = ""; customSubTasks = []; renderPreview(); refreshTasks(); }
+                const response = await fetch('/api/create-custom-task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title,
+                        subTasks: customSubTasks,
+                        email: localStorage.getItem('userEmail'),
+                        dueDate: dueDate // ترحيل داتا اليوم والشهر والسنة
+                    })
+                });
+                if (response.ok) {
+                    alert("✅ تم ترحيل وجدولة التاسك بنجاح في كالندر كليك أب الحية!");
+                    document.getElementById("custom-task-title").value = "";
+                    document.getElementById("custom-task-date").value = "";
+                    customSubTasks = [];
+                    renderPreview();
+                    refreshTasks();
+                }
             } catch (err) { alert("خطأ اتصال"); }
         }
 

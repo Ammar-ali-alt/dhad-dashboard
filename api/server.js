@@ -13,7 +13,7 @@ const SUPER_PIN = '0000';
 const CLICKUP_TOKEN = 'pk_218484746_Q1RKGUI85Y06WXWC105T3DHXHTA4WHBH';
 const HAFSA_GMAIL = 'who.is.hafsa@gmail.com';
 
-// 📋 معرف قائمة يونيو الموحدة 
+// 📋 معرف قائمة يونيو الموحدة
 const CLICKUP_SINGLE_LIST_ID = '901818521616';
 
 // إعداد وسيلة إرسال الإيميلات التلقائية عبر الـ App Password المعتمد
@@ -72,9 +72,7 @@ async function fetchSingleListTasks(email, isAdmin) {
             return isAssigned || isCreatedByHim;
         }).map(task => {
             let deadlineDate = "غير محدد";
-            if (task.due_date) {
-                deadlineDate = new Date(parseInt(task.due_date)).toLocaleDateString('ar-EG');
-            }
+            if (task.due_date) deadlineDate = new Date(parseInt(task.due_date)).toLocaleDateString('ar-EG');
 
             let deptField = "عام";
             if (task.custom_fields && Array.isArray(task.custom_fields)) {
@@ -96,7 +94,7 @@ async function fetchSingleListTasks(email, isAdmin) {
             }
 
             return {
-                id: task.id, // 🛑 تثبيت الـ id لضمان صحة قفل وتحديث التاسكات
+                id: task.id,
                 title: task.name,
                 department: deptField,
                 dueDate: deadlineDate,
@@ -106,9 +104,7 @@ async function fetchSingleListTasks(email, isAdmin) {
                 subTasks: task.checklists && task.checklists[0] ? task.checklists[0].items.map(item => item.name) : ["تحضير المادة العلمية", "التنفيذ والمراجعة الفنية"]
             };
         });
-    } catch (err) {
-        return [];
-    }
+    } catch (err) { return []; }
 }
 
 app.post('/api/login', async (req, res) => {
@@ -141,9 +137,7 @@ app.post('/api/login', async (req, res) => {
                 tasks: tasks
             }
         });
-    } catch (error) {
-        res.status(500).json({ success: false });
-    }
+    } catch (error) { res.status(500).json({ success: false }); }
 });
 
 app.post('/api/signup', (req, res) => {
@@ -151,9 +145,7 @@ app.post('/api/signup', (req, res) => {
     if (!fullName || !email || !pin) return res.status(400).json({ success: false, message: "يرجى إدخال كافة البيانات!" });
 
     const lowerEmail = email.toLowerCase().trim();
-    if (usersDatabase[lowerEmail]) {
-        return res.status(400).json({ success: false, message: "هذا الحساب مسجل بالفعل!" });
-    }
+    if (usersDatabase[lowerEmail]) return res.status(400).json({ success: false, message: "هذا الحساب مسجل بالفعل!" });
 
     usersDatabase[lowerEmail] = {
         fullName: fullName,
@@ -163,7 +155,7 @@ app.post('/api/signup', (req, res) => {
         visitsByDay: { Saturday: 0, Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0 },
         totalVisits: 0
     };
-    res.json({ success: true, message: "تم تسجيل الحساب بنجاح! جرب سجل دخول الحين." });
+    res.json({ success: true, message: "تم تسجيل الحساب بنجاح!" });
 });
 
 app.get('/api/admin/users', (req, res) => {
@@ -178,15 +170,47 @@ app.get('/api/admin/users', (req, res) => {
     res.json({ success: true, users: usersList });
 });
 
+// 🚀 مسار الترحيل المطور: استقبال الـ due_date وتحويله لـ Timestamp لجدولته في الكالندر هناك
 app.post('/api/create-custom-task', async (req, res) => {
-    const { title, subTasks, email } = req.body;
+    const { title, subTasks, email, dueDate } = req.body;
+
     try {
-        const response = await axios.post(`https://api.clickup.com/api/v2/list/${CLICKUP_SINGLE_LIST_ID}/task`, {
+        // تحويل التاريخ القادم من الفرونت إند (YYYY-MM-DD) إلى الملي ثانية الخاص بكليك أب
+        let clickUpTimestamp = null;
+        if (dueDate) {
+            clickUpTimestamp = new Date(dueDate).getTime();
+        }
+
+        const taskBody = {
             name: title,
-            description: `تم إنشاء المهمة بواسطة بوابة الضاد: ${email}`
-        }, { headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' } });
+            description: `تم إنشاء وتحريك المهمة بواسطة بوابة مجتمع الضاد: ${email}`
+        };
+
+        if (clickUpTimestamp) {
+            taskBody.due_date = clickUpTimestamp; // 📅 ربط النتيجة بالكالندر
+        }
+
+        const response = await axios.post(`https://api.clickup.com/api/v2/list/${CLICKUP_SINGLE_LIST_ID}/task`, taskBody, {
+            headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
+        });
 
         const createdTask = response.data;
+
+        // تكتيك الـ Auto Assign للمسؤول
+        try {
+            const listUsersResponse = await axios.get(`https://api.clickup.com/api/v2/list/${CLICKUP_SINGLE_LIST_ID}/member`, {
+                headers: { 'Authorization': CLICKUP_TOKEN }
+            });
+            const clickUpUsers = listUsersResponse.data.members || [];
+            const matchedMember = clickUpUsers.find(u => u.email.toLowerCase().trim() === email.toLowerCase().trim());
+
+            if (matchedMember) {
+                await axios.put(`https://api.clickup.com/api/v2/task/${createdTask.id}`, {
+                    assignees: { add: [matchedMember.id] }
+                }, { headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' } });
+            }
+        } catch (assignErr) { console.error("عطل الـ Auto-Assign:", assignErr.message); }
+
         if (subTasks && subTasks.length > 0) {
             const checklistResponse = await axios.post(`https://api.clickup.com/api/v2/task/${createdTask.id}/checklist`, { name: "خطوات التنفيذ" }, { headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' } });
             const checklistId = checklistResponse.data.checklist.id;
@@ -194,25 +218,17 @@ app.post('/api/create-custom-task', async (req, res) => {
                 await axios.post(`https://api.clickup.com/api/v2/checklist/${checklistId}/checklist_item`, { name: sub }, { headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' } });
             }
         }
-        res.json({ success: true, message: "تمت إضافة المهمة بنجاح!" });
+        res.json({ success: true, message: "تم تعيين وجدولة المهمة في الكالندر رسميًا! 🚀" });
     } catch (err) { res.status(500).json({ success: false }); }
 });
 
-// 🛑 إصلاح وتأمين قفل التأسكات لايف في كليك اب
 app.post('/api/submit-task', async (req, res) => {
     const { taskId } = req.body;
-    if (!taskId) return res.status(400).json({ success: false, message: "معرف المهمة مفقود." });
-
-    try {
-        await axios.put(`https://api.clickup.com/api/v2/task/${taskId}`, {
-            status: 'complete'
-        }, {
-            headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' }
-        });
-        res.json({ success: true, message: "تم قفل المهمة في كليك اب!" });
-    } catch (err) {
-        console.error("فشل إغلاق التاسك كليك اب:", err.message);
-        res.status(500).json({ success: false });
+    if (taskId) {
+        try {
+            await axios.put(`https://api.clickup.com/api/v2/task/${taskId}`, { status: 'complete' }, { headers: { 'Authorization': CLICKUP_TOKEN, 'Content-Type': 'application/json' } });
+            res.json({ success: true });
+        } catch (err) { res.status(500).json({ success: false }); }
     }
 });
 
@@ -236,14 +252,10 @@ app.post('/api/submit-unlisted-task', async (req, res) => {
                 </div>
             </div>`
     };
-
     try {
         await transporter.sendMail(mailOptions);
         res.json({ success: true, message: "تم تسجيل تسليم المهمة الخارجية وإشعار حفصة بنجاح! 📢" });
-    } catch (error) {
-        console.error("فشل إرسال الإيميل:", error.message);
-        res.status(500).json({ success: false });
-    }
+    } catch (error) { res.status(500).json({ success: false }); }
 });
 
 module.exports = app;
